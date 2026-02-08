@@ -333,6 +333,79 @@
       background: rgba(255,255,255,.1);
       transform: rotate(30deg);
     }
+    /* 탭 */
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid rgba(255,255,255,.08);
+      padding-bottom: 2px;
+    }
+    .tabBtn{
+      background: transparent;
+      border: 0;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      min-height: auto;
+      transition: all .2s;
+    }
+    .tabBtn:hover{
+      color: var(--text);
+      filter: none;
+    }
+    .tabBtn.active{
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .tabContent{display:none;}
+    .tabContent.active{display:block;}
+    /* 정기간행물 전용 */
+    .magStatus{
+      display: inline-flex;
+      align-items: center;
+      gap:6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .magStatus.read{
+      background: rgba(134,239,172,.16);
+      color: var(--ok);
+    }
+    .magStatus.unread{
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+    }
+    .magList{display:grid; gap:10px; margin-top: 12px;}
+    .magItem{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      gap:12px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .magItem:hover{
+      background: rgba(255,255,255,.06);
+    }
+    .magItem.read{
+      background: rgba(134,239,172,.05);
+      border-color: rgba(134,239,172,.15);
+    }
+    .magInfo{flex:1;}
+    .magTitle{font-weight: 700; font-size: 14px; margin-bottom: 4px;}
+    .magMeta{font-size: 12px; color: var(--muted);}
+    .magActions{display:flex; gap:6px;}
     @media print{
       body{background:#fff; color:#000}
       .card, .entry{box-shadow:none}
@@ -347,7 +420,7 @@
     <header>
       <div>
         <h1>독서기록장</h1>
-        <div class="sub">아주 간단하게: 날짜 · 책 · 요약</div>
+        <div class="sub">일반 도서 & 정기간행물 관리</div>
       </div>
       <div style="display:flex; gap:10px; align-items:center;">
         <div class="sub noPrint" id="countLabel"></div>
@@ -358,59 +431,120 @@
     <div class="grid">
       <!-- 입력 -->
       <section class="card noPrint" aria-label="새 기록">
-        <h2 id="formTitle">새 기록</h2>
-
-        <div class="row">
-          <div>
-            <label for="date">날짜 *</label>
-            <input id="date" type="date" />
-          </div>
-          <div>
-            <label for="rating">별점</label>
-            <select id="rating">
-              <option value="0">선택 안 함</option>
-              <option value="1">★</option>
-              <option value="2">★★</option>
-              <option value="3">★★★</option>
-              <option value="4">★★★★</option>
-              <option value="5">★★★★★</option>
-            </select>
-          </div>
+        <!-- 탭 메뉴 -->
+        <div class="tabs">
+          <button class="tabBtn active" data-tab="books">📚 일반 도서</button>
+          <button class="tabBtn" data-tab="magazines">📰 정기간행물</button>
         </div>
 
-        <div class="row" style="margin-top:10px;">
-          <div>
-            <label for="title">책 제목 *</label>
-            <input id="title" type="text" placeholder="예) 데미안" maxlength="80" />
+        <!-- 일반 도서 탭 -->
+        <div id="booksTab" class="tabContent active">
+          <h2 id="formTitle">새 기록</h2>
+
+          <div class="row">
+            <div>
+              <label for="date">날짜 *</label>
+              <input id="date" type="date" />
+            </div>
+            <div>
+              <label for="rating">별점</label>
+              <select id="rating">
+                <option value="0">선택 안 함</option>
+                <option value="1">★</option>
+                <option value="2">★★</option>
+                <option value="3">★★★</option>
+                <option value="4">★★★★</option>
+                <option value="5">★★★★★</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label for="author">저자</label>
-            <input id="author" type="text" placeholder="예) 헤르만 헤세" maxlength="60" />
+
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label for="title">책 제목 *</label>
+              <input id="title" type="text" placeholder="예) 데미안" maxlength="80" />
+            </div>
+            <div>
+              <label for="author">저자</label>
+              <input id="author" type="text" placeholder="예) 헤르만 헤세" maxlength="60" />
+            </div>
           </div>
+
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label for="progress">진도/페이지</label>
+              <input id="progress" type="text" placeholder="예) 1~80p / 30%" maxlength="30" />
+            </div>
+            <div>
+              <label for="tags">태그(쉼표로 구분)</label>
+              <input id="tags" type="text" placeholder="예) 소설, 성장, 인생" maxlength="60" />
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label for="summary">간단 요약 *</label>
+            <textarea id="summary" placeholder="짧게: 어떤 내용이었는지, 기억할 포인트만" maxlength="600"></textarea>
+          </div>
+
+          <div class="actions">
+            <button id="saveBtn" class="ok">저장</button>
+            <button id="resetBtn" class="secondary">초기화</button>
+            <button id="cancelEditBtn" class="secondary" style="display:none;">편집 취소</button>
+          </div>
+          <div class="hint">* 는 필수. 저장하면 브라우저에 자동 저장돼요.</div>
         </div>
 
-        <div class="row" style="margin-top:10px;">
-          <div>
-            <label for="progress">진도/페이지</label>
-            <input id="progress" type="text" placeholder="예) 1~80p / 30%" maxlength="30" />
-          </div>
-          <div>
-            <label for="tags">태그(쉼표로 구분)</label>
-            <input id="tags" type="text" placeholder="예) 소설, 성장, 인생" maxlength="60" />
-          </div>
-        </div>
+        <!-- 정기간행물 탭 -->
+        <div id="magazinesTab" class="tabContent">
+          <h2>정기간행물 관리</h2>
 
-        <div style="margin-top:10px;">
-          <label for="summary">간단 요약 *</label>
-          <textarea id="summary" placeholder="짧게: 어떤 내용이었는지, 기억할 포인트만" maxlength="600"></textarea>
-        </div>
+          <div style="margin-bottom: 14px;">
+            <label for="magName">간행물 이름 *</label>
+            <input id="magName" type="text" placeholder="예) 뉴튼, 과학동아" maxlength="40" list="magNamesList" />
+            <datalist id="magNamesList"></datalist>
+          </div>
 
-        <div class="actions">
-          <button id="saveBtn" class="ok">저장</button>
-          <button id="resetBtn" class="secondary">초기화</button>
-          <button id="cancelEditBtn" class="secondary" style="display:none;">편집 취소</button>
+          <div class="row">
+            <div>
+              <label for="magYear">연도 *</label>
+              <input id="magYear" type="number" placeholder="2026" min="1900" max="2100" />
+            </div>
+            <div>
+              <label for="magMonth">월호 *</label>
+              <select id="magMonth">
+                <option value="">선택</option>
+                <option value="1">1월호</option>
+                <option value="2">2월호</option>
+                <option value="3">3월호</option>
+                <option value="4">4월호</option>
+                <option value="5">5월호</option>
+                <option value="6">6월호</option>
+                <option value="7">7월호</option>
+                <option value="8">8월호</option>
+                <option value="9">9월호</option>
+                <option value="10">10월호</option>
+                <option value="11">11월호</option>
+                <option value="12">12월호</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label for="magReadDate">읽은 날짜 (선택)</label>
+            <input id="magReadDate" type="date" />
+            <div class="hint">읽지 않았다면 비워두세요</div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <label for="magNotes">메모 (선택)</label>
+            <textarea id="magNotes" placeholder="기억할 내용이나 인상 깊었던 부분" maxlength="400"></textarea>
+          </div>
+
+          <div class="actions">
+            <button id="saveMagBtn" class="ok">저장</button>
+            <button id="resetMagBtn" class="secondary">초기화</button>
+          </div>
         </div>
-        <div class="hint">* 는 필수. 저장하면 브라우저에 자동 저장돼요(이 PC/브라우저에서만 유지).</div>
 
         <div class="divider"></div>
 
@@ -425,27 +559,62 @@
 
       <!-- 목록/검색 -->
       <section class="card" aria-label="기록 목록">
-        <h2>기록</h2>
+        <!-- 탭 메뉴 -->
+        <div class="tabs">
+          <button class="tabBtn active" data-tab="books">📚 일반 도서</button>
+          <button class="tabBtn" data-tab="magazines">📰 정기간행물</button>
+        </div>
 
-        <div class="toolbar noPrint">
-          <div class="left">
-            <div class="pill" title="제목/저자/요약/태그 검색">
-              🔎 <input id="q" type="text" placeholder="검색..." />
+        <!-- 일반 도서 목록 -->
+        <div id="booksListTab" class="tabContent active">
+          <h2>기록</h2>
+
+          <div class="toolbar noPrint">
+            <div class="left">
+              <div class="pill" title="제목/저자/요약/태그 검색">
+                🔎 <input id="q" type="text" placeholder="검색..." />
+              </div>
+            </div>
+            <div class="right">
+              <label class="sub" style="margin:0;">정렬</label>
+              <select id="sort" aria-label="정렬">
+                <option value="new">최신순</option>
+                <option value="old">오래된순</option>
+              </select>
             </div>
           </div>
-          <div class="right">
-            <label class="sub" style="margin:0;">정렬</label>
-            <select id="sort" aria-label="정렬">
-              <option value="new">최신순</option>
-              <option value="old">오래된순</option>
-            </select>
+
+          <div id="list" class="list"></div>
+
+          <div class="footerNote">
+            팁: 제목에 "완독/중단" 같은 단어를 붙이거나, 태그에 "완독"을 넣으면 찾기 쉬워요.
           </div>
         </div>
 
-        <div id="list" class="list"></div>
+        <!-- 정기간행물 목록 -->
+        <div id="magazinesListTab" class="tabContent">
+          <h2>정기간행물 보관함</h2>
 
-        <div class="footerNote">
-          팁: 제목에 “완독/중단” 같은 단어를 붙이거나, 태그에 “완독”을 넣으면 찾기 쉬워요.
+          <div class="toolbar noPrint">
+            <div class="left">
+              <select id="magFilter" aria-label="간행물 선택" style="width: auto; min-width: 200px;">
+                <option value="">전체 보기</option>
+              </select>
+            </div>
+            <div class="right">
+              <label class="sub" style="margin:0;">정렬</label>
+              <select id="magSort" aria-label="정렬">
+                <option value="recent">최신호순</option>
+                <option value="oldest">오래된호순</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="magList" class="list"></div>
+
+          <div class="footerNote">
+            항목을 클릭하여 읽음/안읽음을 전환할 수 있어요. 초록색은 읽은 호입니다.
+          </div>
         </div>
       </section>
     </div>
@@ -477,6 +646,7 @@
   <script>
     // ====== 저장 키 ======
     const STORAGE_KEY = "reading_log_simple_v1";
+    const MAGAZINE_KEY = "reading_log_magazines_v1";
     const SETTINGS_KEY = "reading_log_settings_v1";
 
     // ====== DOM ======
@@ -505,14 +675,56 @@
       openSettings: $("openSettings"),
       closeSettings: $("closeSettings"),
       settingsModal: $("settingsModal"),
+      // 정기간행물
+      magName: $("magName"),
+      magYear: $("magYear"),
+      magMonth: $("magMonth"),
+      magReadDate: $("magReadDate"),
+      magNotes: $("magNotes"),
+      saveMagBtn: $("saveMagBtn"),
+      resetMagBtn: $("resetMagBtn"),
+      magList: $("magList"),
+      magFilter: $("magFilter"),
+      magSort: $("magSort"),
+      magNamesList: $("magNamesList"),
     };
 
     // ====== 상태 ======
-    /** @type {{items:any[], editingId: string|null}} */
     const state = {
       items: [],
       editingId: null,
+      magazines: [],
+      currentTab: 'books'
     };
+
+    // ====== 탭 전환 ======
+    function switchTab(tabName) {
+      state.currentTab = tabName;
+      
+      // 모든 탭 버튼과 콘텐츠 업데이트
+      document.querySelectorAll('.tabBtn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
+      });
+      
+      document.querySelectorAll('.tabContent').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      if(tabName === 'books') {
+        $('booksTab').classList.add('active');
+        $('booksListTab').classList.add('active');
+      } else {
+        $('magazinesTab').classList.add('active');
+        $('magazinesListTab').classList.add('active');
+        renderMagazines();
+      }
+    }
+
+    document.querySelectorAll('.tabBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchTab(btn.getAttribute('data-tab'));
+      });
+    });
 
     // ====== 설정 관리 ======
     function loadSettings(){
@@ -530,13 +742,11 @@
 
     function applyFontScale(scale){
       document.documentElement.style.setProperty('--font-scale', scale);
-      // 버튼 active 상태 업데이트
       document.querySelectorAll('.scaleBtn').forEach(btn => {
         btn.classList.toggle('active', parseFloat(btn.getAttribute('data-scale')) === scale);
       });
     }
 
-    // 설정 모달 열기/닫기
     els.openSettings.addEventListener('click', () => {
       els.settingsModal.classList.add('show');
     });
@@ -551,14 +761,12 @@
       }
     });
 
-    // ESC 키로 모달 닫기
     document.addEventListener('keydown', (e) => {
       if(e.key === 'Escape' && els.settingsModal.classList.contains('show')){
         els.settingsModal.classList.remove('show');
       }
     });
 
-    // 텍스트 크기 버튼
     document.querySelectorAll('.scaleBtn').forEach(btn => {
       btn.addEventListener('click', () => {
         const scale = parseFloat(btn.getAttribute('data-scale'));
@@ -602,7 +810,7 @@
         .replaceAll("'","&#39;");
     }
 
-    // ====== 저장/불러오기 ======
+    // ====== 일반 도서 저장/불러오기 ======
     function load(){
       try{
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -617,7 +825,37 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
     }
 
-    // ====== 폼 ======
+    // ====== 정기간행물 저장/불러오기 ======
+    function loadMagazines(){
+      try{
+        const raw = localStorage.getItem(MAGAZINE_KEY);
+        state.magazines = raw ? JSON.parse(raw) : [];
+        if(!Array.isArray(state.magazines)) state.magazines = [];
+      }catch(e){
+        state.magazines = [];
+      }
+      updateMagNamesList();
+      updateMagFilter();
+    }
+
+    function persistMagazines(){
+      localStorage.setItem(MAGAZINE_KEY, JSON.stringify(state.magazines));
+    }
+
+    function updateMagNamesList(){
+      const names = [...new Set(state.magazines.map(m => m.name))].sort();
+      els.magNamesList.innerHTML = names.map(n => `<option value="${escapeHtml(n)}">`).join('');
+    }
+
+    function updateMagFilter(){
+      const names = [...new Set(state.magazines.map(m => m.name))].sort();
+      const current = els.magFilter.value;
+      els.magFilter.innerHTML = '<option value="">전체 보기</option>' + 
+        names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+      if(names.includes(current)) els.magFilter.value = current;
+    }
+
+    // ====== 일반 도서 폼 ======
     function setDefaultDate(){
       if(!els.date.value){
         const d = new Date();
@@ -684,7 +922,46 @@
       };
     }
 
-    // ====== 렌더 ======
+    // ====== 정기간행물 폼 ======
+    function setDefaultMagYear(){
+      if(!els.magYear.value){
+        els.magYear.value = new Date().getFullYear();
+      }
+    }
+
+    function resetMagForm(){
+      els.magName.value = "";
+      els.magYear.value = "";
+      els.magMonth.value = "";
+      els.magReadDate.value = "";
+      els.magNotes.value = "";
+      setDefaultMagYear();
+      els.magName.focus();
+    }
+
+    function validateMagForm(){
+      const name = safeTrim(els.magName.value);
+      const year = safeTrim(els.magYear.value);
+      const month = safeTrim(els.magMonth.value);
+
+      if(!name) return {ok:false, msg:"간행물 이름을 입력해줘."};
+      if(!year) return {ok:false, msg:"연도를 입력해줘."};
+      if(!month) return {ok:false, msg:"월호를 선택해줘."};
+      return {ok:true, msg:""};
+    }
+
+    function getMagFormData(){
+      return {
+        name: safeTrim(els.magName.value),
+        year: Number(els.magYear.value),
+        month: Number(els.magMonth.value),
+        readDate: safeTrim(els.magReadDate.value) || null,
+        notes: safeTrim(els.magNotes.value),
+        isRead: !!safeTrim(els.magReadDate.value)
+      };
+    }
+
+    // ====== 일반 도서 렌더 ======
     function getFilteredSortedItems(){
       const q = safeTrim(els.q.value).toLowerCase();
       const sort = els.sort.value;
@@ -719,7 +996,7 @@
 
     function render(){
       const items = getFilteredSortedItems();
-      els.countLabel.textContent = `총 ${state.items.length}개`;
+      els.countLabel.textContent = `도서 ${state.items.length}개 · 간행물 ${state.magazines.length}개`;
 
       if(items.length === 0){
         els.list.innerHTML = `<div class="empty">아직 기록이 없어요. 위에서 첫 기록을 저장해보자.</div>`;
@@ -758,7 +1035,54 @@
       }).join("");
     }
 
-    // ====== 동작 ======
+    // ====== 정기간행물 렌더 ======
+    function getFilteredSortedMagazines(){
+      const filterName = els.magFilter.value;
+      const sort = els.magSort.value;
+
+      let arr = [...state.magazines];
+
+      if(filterName){
+        arr = arr.filter(m => m.name === filterName);
+      }
+
+      arr.sort((a,b)=>{
+        const A = a.year * 100 + a.month;
+        const B = b.year * 100 + b.month;
+        return sort === 'oldest' ? A - B : B - A;
+      });
+
+      return arr;
+    }
+
+    function renderMagazines(){
+      const items = getFilteredSortedMagazines();
+
+      if(items.length === 0){
+        els.magList.innerHTML = `<div class="empty">등록된 정기간행물이 없어요. 위에서 추가해보세요!</div>`;
+        return;
+      }
+
+      els.magList.innerHTML = items.map(m => {
+        const readClass = m.isRead ? 'read' : 'unread';
+        const readMark = m.isRead ? '✓' : '';
+        const readInfo = m.readDate ? `읽음: ${m.readDate}` : '미독';
+        
+        return `
+          <div class="magItem ${readClass}" data-id="${m.id}">
+            <div class="magInfo">
+              <div class="magTitle">${readMark} ${escapeHtml(m.name)} ${m.year}년 ${m.month}월호</div>
+              <div class="magMeta">${readInfo}${m.notes ? ' · ' + escapeHtml(m.notes.substring(0,50)) : ''}</div>
+            </div>
+            <div class="magActions noPrint">
+              <button class="smallBtn danger" data-action="delMag">삭제</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ====== 일반 도서 동작 ======
     function upsert(){
       const v = validateForm();
       if(!v.ok){
@@ -809,13 +1133,87 @@
       window.scrollTo({top:0, behavior:"smooth"});
     }
 
+    // ====== 정기간행물 동작 ======
+    function saveMagazine(){
+      const v = validateMagForm();
+      if(!v.ok){
+        alert(v.msg);
+        return;
+      }
+
+      const data = getMagFormData();
+      
+      // 중복 체크
+      const existing = state.magazines.find(m => 
+        m.name === data.name && m.year === data.year && m.month === data.month
+      );
+
+      if(existing){
+        const ok = confirm("이미 같은 호가 등록되어 있어요. 덮어쓸까요?");
+        if(!ok) return;
+        existing.readDate = data.readDate;
+        existing.notes = data.notes;
+        existing.isRead = data.isRead;
+        existing.updatedAt = nowTs();
+      }else{
+        state.magazines.push({
+          id: uid(),
+          ...data,
+          createdAt: nowTs(),
+          updatedAt: nowTs(),
+        });
+      }
+
+      persistMagazines();
+      resetMagForm();
+      updateMagNamesList();
+      updateMagFilter();
+      renderMagazines();
+      render(); // 카운트 업데이트
+    }
+
+    function toggleMagRead(id){
+      const mag = state.magazines.find(m => m.id === id);
+      if(!mag) return;
+
+      if(mag.isRead){
+        mag.isRead = false;
+        mag.readDate = null;
+      }else{
+        mag.isRead = true;
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth()+1).padStart(2,"0");
+        const dd = String(today.getDate()).padStart(2,"0");
+        mag.readDate = `${yyyy}-${mm}-${dd}`;
+      }
+
+      mag.updatedAt = nowTs();
+      persistMagazines();
+      renderMagazines();
+    }
+
+    function removeMagById(id){
+      const idx = state.magazines.findIndex(m => m.id === id);
+      if(idx < 0) return;
+      const ok = confirm("이 간행물을 삭제할까?");
+      if(!ok) return;
+
+      state.magazines.splice(idx,1);
+      persistMagazines();
+      updateMagNamesList();
+      updateMagFilter();
+      renderMagazines();
+      render(); // 카운트 업데이트
+    }
+
     // ====== 백업/복원 ======
     function exportJson(){
       const payload = {
         app: "reading_log_simple_v1",
         exportedAt: new Date().toISOString(),
-        count: state.items.length,
-        items: state.items
+        books: state.items,
+        magazines: state.magazines
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
       const a = document.createElement("a");
@@ -830,43 +1228,43 @@
       reader.onload = () => {
         try{
           const obj = JSON.parse(reader.result);
-          const incoming = obj.items ?? obj;
-          if(!Array.isArray(incoming)) throw new Error("형식 오류");
+          
+          const incomingBooks = obj.books || obj.items || [];
+          const incomingMags = obj.magazines || [];
 
-          // 최소 필드 보정
-          const cleaned = incoming.map(x => ({
-            id: x.id || uid(),
-            date: safeTrim(x.date),
-            title: safeTrim(x.title),
-            author: safeTrim(x.author),
-            progress: safeTrim(x.progress),
-            tags: Array.isArray(x.tags) ? x.tags.map(t=>safeTrim(t)).filter(Boolean) : parseTags(x.tags),
-            rating: Number(x.rating) || 0,
-            summary: safeTrim(x.summary),
-            createdAt: Number(x.createdAt) || nowTs(),
-            updatedAt: Number(x.updatedAt) || nowTs(),
-          })).filter(x => x.date && x.title && x.summary);
-
-          if(cleaned.length === 0){
-            alert("가져올 수 있는 기록이 없어요(필수값: 날짜/제목/요약).");
-            return;
+          if(!Array.isArray(incomingBooks) && !Array.isArray(incomingMags)){
+            throw new Error("형식 오류");
           }
 
-          const ok = confirm(`가져오기: ${cleaned.length}개\n기존 기록을 유지하고 합칠까? (취소=덮어쓰기)`);
+          const ok = confirm(`가져오기: 도서 ${incomingBooks.length}개, 간행물 ${incomingMags.length}개\n기존 기록을 유지하고 합칠까? (취소=덮어쓰기)`);
+          
           if(ok){
-            // merge: id 충돌 방지
+            // 도서 병합
             const existingIds = new Set(state.items.map(x=>x.id));
-            cleaned.forEach(x=>{
+            incomingBooks.forEach(x=>{
               if(existingIds.has(x.id)) x.id = uid();
               state.items.push(x);
             });
+
+            // 정기간행물 병합
+            const existingMagIds = new Set(state.magazines.map(x=>x.id));
+            incomingMags.forEach(x=>{
+              if(existingMagIds.has(x.id)) x.id = uid();
+              state.magazines.push(x);
+            });
           }else{
-            state.items = cleaned;
+            state.items = incomingBooks;
+            state.magazines = incomingMags;
           }
 
           persist();
+          persistMagazines();
           resetForm();
+          resetMagForm();
+          updateMagNamesList();
+          updateMagFilter();
           render();
+          renderMagazines();
           alert("가져오기 완료!");
         }catch(e){
           alert("가져오기 실패: 올바른 JSON 파일인지 확인해줘.");
@@ -879,9 +1277,15 @@
       const ok = confirm("전체 기록을 삭제할까? (되돌릴 수 없음)");
       if(!ok) return;
       state.items = [];
+      state.magazines = [];
       persist();
+      persistMagazines();
       resetForm();
+      resetMagForm();
+      updateMagNamesList();
+      updateMagFilter();
       render();
+      renderMagazines();
     }
 
     // ====== 이벤트 ======
@@ -889,8 +1293,14 @@
     els.resetBtn.addEventListener("click", resetForm);
     els.cancelEditBtn.addEventListener("click", resetForm);
 
+    els.saveMagBtn.addEventListener("click", saveMagazine);
+    els.resetMagBtn.addEventListener("click", resetMagForm);
+
     els.q.addEventListener("input", render);
     els.sort.addEventListener("change", render);
+
+    els.magFilter.addEventListener("change", renderMagazines);
+    els.magSort.addEventListener("change", renderMagazines);
 
     els.list.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
@@ -903,6 +1313,25 @@
 
       if(action === "edit") editById(id);
       if(action === "del") removeById(id);
+    });
+
+    els.magList.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      const item = e.target.closest(".magItem");
+      
+      if(!item) return;
+      const id = item.getAttribute("data-id");
+
+      if(btn){
+        const action = btn.getAttribute("data-action");
+        if(action === "delMag"){
+          e.stopPropagation();
+          removeMagById(id);
+        }
+      }else{
+        // 항목 클릭 시 읽음/안읽음 토글
+        toggleMagRead(id);
+      }
     });
 
     els.exportBtn.addEventListener("click", exportJson);
@@ -921,18 +1350,24 @@
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const mod = isMac ? e.metaKey : e.ctrlKey;
       if(mod && e.key === "Enter"){
-        upsert();
+        if(state.currentTab === 'books'){
+          upsert();
+        }else{
+          saveMagazine();
+        }
       }
     });
 
     // ====== 시작 ======
-    // 설정 로드 및 적용
     const savedSettings = loadSettings();
     applyFontScale(savedSettings.fontScale);
 
     load();
+    loadMagazines();
     setDefaultDate();
+    setDefaultMagYear();
     render();
+    renderMagazines();
   </script>
 </body>
 </html>
