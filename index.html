@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b0d10" />
   <title>독서기록장</title>
-  <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22독서기록장%22,%22short_name%22:%22독서기록%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230b0d10%22,%22theme_color%22:%22%230b0d10%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%237dd3fc' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%230b0d10'%3E📚%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}" />
+  <link rel="manifest" href="./manifest.json" />
   <style>
     :root{
       --bg:#0b0d10;
@@ -1701,6 +1701,15 @@
     setDefaultMagYear();
     render();
     renderMagazines();
+
+    // PWA: Service Worker 등록 (Chrome 설치용)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then(function (reg) { console.log('SW 등록됨:', reg.scope); })
+          .catch(function (err) { console.warn('SW 등록 실패:', err); });
+      });
+    }
   </script>
 </body>
 </html>
