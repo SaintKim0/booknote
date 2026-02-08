@@ -271,6 +271,11 @@
       padding: 24px;
       animation: modalIn .2s ease;
     }
+    .modalContent.modalScrollable{
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .modalContent.modalWide{ max-width: 520px; }
     @keyframes modalIn{
       from{opacity:0; transform: scale(0.95)}
       to{opacity:1; transform: scale(1)}
@@ -583,11 +588,7 @@
         <div class="divider"></div>
 
         <div class="actions">
-          <button id="exportBtn">내보내기(JSON)</button>
-          <button id="importBtn" class="secondary">가져오기(JSON)</button>
-          <button id="printBtn" class="secondary">인쇄</button>
-          <button id="wipeBtn" class="danger">전체 삭제</button>
-          <input id="importFile" type="file" accept="application/json" style="display:none;" />
+          <button type="button" class="secondary" id="openDataManageModal">📤 데이터 관리</button>
         </div>
       </section>
 
@@ -627,28 +628,9 @@
 
         <!-- 정기간행물 목록 -->
         <div id="magazinesListTab" class="tabContent">
-          <h2>정기간행물 보관함</h2>
-
-          <div class="toolbar noPrint">
-            <div class="left">
-              <select id="magFilter" aria-label="간행물 선택" style="width: auto; min-width: 200px;">
-                <option value="">전체 보기</option>
-              </select>
-            </div>
-            <div class="right">
-              <label class="sub" style="margin:0;">정렬</label>
-              <select id="magSort" aria-label="정렬">
-                <option value="recent">최신호순</option>
-                <option value="oldest">오래된호순</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="magList" class="list"></div>
-
-          <div class="footerNote">
-            항목을 클릭하여 읽음/안읽음을 전환할 수 있어요. 초록색은 읽은 호입니다.
-          </div>
+          <h2>정기간행물</h2>
+          <p class="sub" style="margin: 0 0 14px;">호수별 읽음 기록을 보관함에서 확인하세요.</p>
+          <button type="button" class="ok" id="openMagArchiveModal" style="width:100%;">📰 정기간행물 보관함 열기</button>
         </div>
       </section>
     </div>
@@ -708,6 +690,64 @@
     </div>
   </div>
 
+  <!-- 정기간행물 보관함 모달 -->
+  <div id="magArchiveModal" class="modal">
+    <div class="modalContent modalScrollable modalWide">
+      <div class="modalHeader">
+        <h3>📰 정기간행물 보관함</h3>
+        <button class="closeBtn" id="closeMagArchiveModal" aria-label="닫기">&times;</button>
+      </div>
+
+      <div class="toolbar noPrint">
+        <div class="left">
+          <select id="magArchiveFilter" aria-label="간행물 선택" style="width: auto; min-width: 180px;">
+            <option value="">전체 보기</option>
+          </select>
+        </div>
+        <div class="right">
+          <label class="sub" style="margin:0;">정렬</label>
+          <select id="magArchiveSort" aria-label="정렬">
+            <option value="recent">최신호순</option>
+            <option value="oldest">오래된호순</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="magArchiveList" class="list"></div>
+
+      <div class="footerNote">
+        항목을 클릭하여 읽음/안읽음을 전환할 수 있어요. 초록색은 읽은 호입니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 데이터 관리 모달 -->
+  <div id="dataManageModal" class="modal">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>📤 데이터 관리</h3>
+        <button class="closeBtn" id="closeDataManageModal" aria-label="닫기">&times;</button>
+      </div>
+
+      <div class="settingItem">
+        <label>백업 및 복원</label>
+        <div class="actions">
+          <button id="exportBtn">내보내기(JSON)</button>
+          <button id="importBtn" class="secondary">가져오기(JSON)</button>
+          <input id="importFile" type="file" accept="application/json" style="display:none;" />
+        </div>
+      </div>
+
+      <div class="settingItem">
+        <label>인쇄 및 삭제</label>
+        <div class="actions">
+          <button id="printBtn" class="secondary">인쇄</button>
+          <button id="wipeBtn" class="danger">전체 삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ====== 저장 키 ======
     const STORAGE_KEY = "reading_log_simple_v1";
@@ -749,9 +789,15 @@
       magNotes: $("magNotes"),
       saveMagBtn: $("saveMagBtn"),
       resetMagBtn: $("resetMagBtn"),
-      magList: $("magList"),
-      magFilter: $("magFilter"),
-      magSort: $("magSort"),
+      openMagArchiveModal: $("openMagArchiveModal"),
+      closeMagArchiveModal: $("closeMagArchiveModal"),
+      magArchiveModal: $("magArchiveModal"),
+      magArchiveFilter: $("magArchiveFilter"),
+      magArchiveSort: $("magArchiveSort"),
+      magArchiveList: $("magArchiveList"),
+      openDataManageModal: $("openDataManageModal"),
+      closeDataManageModal: $("closeDataManageModal"),
+      dataManageModal: $("dataManageModal"),
       magNameNew: $("magNameNew"),
       magNameNewWrap: $("magNameNewWrap"),
       magNameAddBtn: $("magNameAddBtn"),
@@ -849,12 +895,11 @@
     });
 
     document.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape' && els.settingsModal.classList.contains('show')){
-        els.settingsModal.classList.remove('show');
-      }
-      if(e.key === 'Escape' && els.magListModal.classList.contains('show')){
-        els.magListModal.classList.remove('show');
-      }
+      if(e.key !== 'Escape') return;
+      if(els.settingsModal.classList.contains('show')) els.settingsModal.classList.remove('show');
+      else if(els.magListModal.classList.contains('show')) els.magListModal.classList.remove('show');
+      else if(els.magArchiveModal.classList.contains('show')) els.magArchiveModal.classList.remove('show');
+      else if(els.dataManageModal.classList.contains('show')) els.dataManageModal.classList.remove('show');
     });
 
     els.openMagListModal.addEventListener('click', () => {
@@ -1059,10 +1104,12 @@
 
     function updateMagFilter(){
       const names = state.magazineNames.length ? state.magazineNames : [...new Set(state.magazines.map(m => m.name))].sort();
-      const current = els.magFilter.value;
-      els.magFilter.innerHTML = '<option value="">전체 보기</option>' + 
-        names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-      if(names.includes(current)) els.magFilter.value = current;
+      if(els.magArchiveFilter){
+        const cur = els.magArchiveFilter.value;
+        els.magArchiveFilter.innerHTML = '<option value="">전체 보기</option>' + 
+          names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+        if(names.includes(cur)) els.magArchiveFilter.value = cur;
+      }
     }
 
     // ====== 일반 도서 폼 ======
@@ -1258,8 +1305,10 @@
 
     // ====== 정기간행물 렌더 ======
     function getFilteredSortedMagazines(){
-      const filterName = els.magFilter.value;
-      const sort = els.magSort.value;
+      const filterEl = els.magArchiveFilter;
+      const sortEl = els.magArchiveSort;
+      const filterName = filterEl ? filterEl.value : '';
+      const sort = sortEl ? sortEl.value : 'recent';
 
       let arr = [...state.magazines];
 
@@ -1278,13 +1327,15 @@
 
     function renderMagazines(){
       const items = getFilteredSortedMagazines();
+      const container = els.magArchiveList;
+      if(!container) return;
 
       if(items.length === 0){
-        els.magList.innerHTML = `<div class="empty">등록된 정기간행물이 없어요. 위에서 추가해보세요!</div>`;
+        container.innerHTML = `<div class="empty">등록된 정기간행물이 없어요. 위에서 추가해보세요!</div>`;
         return;
       }
 
-      els.magList.innerHTML = items.map(m => {
+      container.innerHTML = items.map(m => {
         const readClass = m.isRead ? 'read' : 'unread';
         const readMark = m.isRead ? '✓' : '';
         const readInfo = m.readDate ? `읽음: ${m.readDate}` : '미독';
@@ -1555,8 +1606,34 @@
     els.q.addEventListener("input", render);
     els.sort.addEventListener("change", render);
 
-    els.magFilter.addEventListener("change", renderMagazines);
-    els.magSort.addEventListener("change", renderMagazines);
+    if(els.magArchiveFilter) els.magArchiveFilter.addEventListener("change", renderMagazines);
+    if(els.magArchiveSort) els.magArchiveSort.addEventListener("change", renderMagazines);
+
+    els.openMagArchiveModal.addEventListener("click", () => {
+      updateMagFilter();
+      renderMagazines();
+      els.magArchiveModal.classList.add("show");
+    });
+
+    els.closeMagArchiveModal.addEventListener("click", () => {
+      els.magArchiveModal.classList.remove("show");
+    });
+
+    els.magArchiveModal.addEventListener("click", (e) => {
+      if(e.target === els.magArchiveModal) els.magArchiveModal.classList.remove("show");
+    });
+
+    els.openDataManageModal.addEventListener("click", () => {
+      els.dataManageModal.classList.add("show");
+    });
+
+    els.closeDataManageModal.addEventListener("click", () => {
+      els.dataManageModal.classList.remove("show");
+    });
+
+    els.dataManageModal.addEventListener("click", (e) => {
+      if(e.target === els.dataManageModal) els.dataManageModal.classList.remove("show");
+    });
 
     els.list.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
@@ -1571,13 +1648,11 @@
       if(action === "del") removeById(id);
     });
 
-    els.magList.addEventListener("click", (e) => {
+    function handleMagItemClick(e){
       const btn = e.target.closest("button");
       const item = e.target.closest(".magItem");
-      
       if(!item) return;
       const id = item.getAttribute("data-id");
-
       if(btn){
         const action = btn.getAttribute("data-action");
         if(action === "delMag"){
@@ -1585,10 +1660,11 @@
           removeMagById(id);
         }
       }else{
-        // 항목 클릭 시 읽음/안읽음 토글
         toggleMagRead(id);
       }
-    });
+    }
+
+    if(els.magArchiveList) els.magArchiveList.addEventListener("click", handleMagItemClick);
 
     els.exportBtn.addEventListener("click", exportJson);
     els.importBtn.addEventListener("click", () => els.importFile.click());
