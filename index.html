@@ -533,11 +533,9 @@
               <input id="magNameNew" type="text" placeholder="새 간행물 이름" maxlength="40" />
               <button type="button" id="magNameAddBtn" class="ok">추가</button>
             </div>
-          </div>
-
-          <div class="magNameList">
-            <h4>간행물 목록 관리</h4>
-            <div id="magNameListRows"></div>
+            <div class="hint" style="margin-top:8px;">
+              <button type="button" class="smallBtn secondary" id="openMagListModal">📋 간행물 목록 관리</button>
+            </div>
           </div>
 
           <div class="row" style="margin-top:14px;">
@@ -687,6 +685,29 @@
     </div>
   </div>
 
+  <!-- 간행물 목록 관리 모달 -->
+  <div id="magListModal" class="modal">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>📋 간행물 목록 관리</h3>
+        <button class="closeBtn" id="closeMagListModal" aria-label="닫기">&times;</button>
+      </div>
+
+      <div class="settingItem">
+        <label>새 간행물 추가</label>
+        <div class="magNameNewWrap">
+          <input id="magNameNewModal" type="text" placeholder="간행물 이름 입력" maxlength="40" />
+          <button type="button" id="magNameAddModalBtn" class="ok">추가</button>
+        </div>
+      </div>
+
+      <div class="magNameList">
+        <h4>등록된 간행물</h4>
+        <div id="magNameListRows"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ====== 저장 키 ======
     const STORAGE_KEY = "reading_log_simple_v1";
@@ -735,6 +756,11 @@
       magNameNewWrap: $("magNameNewWrap"),
       magNameAddBtn: $("magNameAddBtn"),
       magNameListRows: $("magNameListRows"),
+      openMagListModal: $("openMagListModal"),
+      closeMagListModal: $("closeMagListModal"),
+      magListModal: $("magListModal"),
+      magNameNewModal: $("magNameNewModal"),
+      magNameAddModalBtn: $("magNameAddModalBtn"),
     };
 
     // ====== 상태 ======
@@ -826,6 +852,30 @@
       if(e.key === 'Escape' && els.settingsModal.classList.contains('show')){
         els.settingsModal.classList.remove('show');
       }
+      if(e.key === 'Escape' && els.magListModal.classList.contains('show')){
+        els.magListModal.classList.remove('show');
+      }
+    });
+
+    els.openMagListModal.addEventListener('click', () => {
+      renderMagNameListRows();
+      els.magListModal.classList.add('show');
+      els.magNameNewModal.value = '';
+      els.magNameNewModal.focus();
+    });
+
+    els.closeMagListModal.addEventListener('click', () => {
+      els.magListModal.classList.remove('show');
+    });
+
+    els.magListModal.addEventListener('click', (e) => {
+      if(e.target === els.magListModal) els.magListModal.classList.remove('show');
+    });
+
+    els.magNameAddModalBtn.addEventListener('click', () => {
+      addMagazineName(els.magNameNewModal.value);
+      els.magNameNewModal.value = '';
+      els.magNameNewModal.focus();
     });
 
     document.querySelectorAll('.scaleBtn[data-scale]').forEach(btn => {
@@ -930,7 +980,7 @@
 
     function renderMagNameListRows(){
       if(!state.magazineNames.length){
-        els.magNameListRows.innerHTML = '<div class="hint">등록된 간행물이 없어요. 위에서 "새로 추가"로 추가하세요.</div>';
+        els.magNameListRows.innerHTML = '<div class="hint">등록된 간행물이 없어요. 위에 이름을 입력하고 "추가"를 누르세요.</div>';
         return;
       }
       els.magNameListRows.innerHTML = state.magazineNames.map((name, idx) => `
