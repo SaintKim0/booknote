@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b0d10" />
+  <title>독서기록장</title>
+  <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22독서기록장%22,%22short_name%22:%22독서기록%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230b0d10%22,%22theme_color%22:%22%230b0d10%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%237dd3fc' width='100' height='100' rx='20'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%230b0d10'%3E📚%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}" />
+  <style>
+    :root{
+      --bg:#0b0d10;
+      --card:#12161c;
+      --muted:#9aa4b2;
+      --text:#e8edf3;
+      --line:#243041;
+      --accent:#7dd3fc;
+      --danger:#fb7185;
+      --ok:#86efac;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --font-scale: 1;
+    }
+    body{font-size: calc(14px * var(--font-scale));}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 20% 0%, rgba(125,211,252,.10), transparent 60%),
+                  radial-gradient(1200px 800px at 80% 20%, rgba(134,239,172,.08), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      -webkit-tap-highlight-color: rgba(125,211,252,.2);
+      -webkit-touch-callout: none;
+    }
+    .wrap{max-width: 980px; margin: 0 auto; padding: 22px 14px 60px;}
+    @media (max-width: 640px){
+      .wrap{padding: 16px 12px 50px;}
+    }
+    header{
+      display:flex; gap:12px; align-items:baseline; justify-content:space-between;
+      margin: 8px 2px 14px;
+    }
+    @media (max-width: 640px){
+      header{flex-direction: column; gap:6px; align-items:flex-start;}
+    }
+    h1{font-size: 22px; margin:0; letter-spacing:-0.3px}
+    @media (max-width: 640px){
+      h1{font-size: 20px;}
+    }
+    .sub{color:var(--muted); font-size: 13px}
+    @media (max-width: 640px){
+      .sub{font-size: 12px;}
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .card h2{font-size:16px; margin: 2px 0 10px}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    @media (max-width: 520px){
+      .row{grid-template-columns: 1fr}
+    }
+    label{display:block; font-size: 12px; color:var(--muted); margin: 0 0 6px}
+    @media (max-width: 640px){
+      label{font-size: 13px;}
+    }
+    input, textarea, select{
+      width:100%;
+      background: rgba(10,12,16,.6);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      font-size: 16px;
+      font-family: inherit;
+    }
+    @media (max-width: 640px){
+      input, textarea, select{
+        padding: 14px 12px;
+        font-size: 16px;
+        border-radius: 10px;
+      }
+    }
+    textarea{min-height: 92px; resize: vertical; line-height:1.5}
+    @media (max-width: 640px){
+      textarea{min-height: 110px;}
+    }
+    input:focus, textarea:focus, select:focus{border-color: rgba(125,211,252,.55); box-shadow: 0 0 0 3px rgba(125,211,252,.12)}
+    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px}
+    button{
+      border:0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(125,211,252,.16);
+      color: var(--text);
+      cursor:pointer;
+      font-weight: 650;
+      font-size: 14px;
+      min-height: 44px;
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+    @media (max-width: 640px){
+      button{
+        padding: 13px 16px;
+        font-size: 15px;
+        min-height: 48px;
+        border-radius: 10px;
+      }
+    }
+    button:hover{filter: brightness(1.08)}
+    button:active{transform: scale(0.97)}
+    button.secondary{background: rgba(255,255,255,.08); font-weight: 600}
+    button.danger{background: rgba(251,113,133,.18)}
+    button.ok{background: rgba(134,239,172,.16)}
+    .hint{color:var(--muted); font-size: 12px; margin-top: 8px; line-height:1.4}
+    @media (max-width: 640px){
+      .hint{font-size: 13px;}
+    }
+    .toolbar{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      margin: 14px 2px;
+    }
+    @media (max-width: 640px){
+      .toolbar{gap:8px; margin: 12px 0;}
+      .toolbar .left{width:100%;}
+      .toolbar .right{width:100%; justify-content:space-between;}
+    }
+    .toolbar .left, .toolbar .right{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .pill{
+      display:flex; gap:10px; align-items:center;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 10px 12px;
+      border-radius: 999px;
+    }
+    .pill input{border:0; background: transparent; padding:0; width: 240px; font-size: 15px;}
+    @media (max-width: 640px){
+      .pill{width:100%; padding: 12px 14px;}
+      .pill input{width:100%; font-size: 16px; padding: 2px 0;}
+    }
+    .list{
+      display:grid; gap:12px;
+    }
+    .entry{
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      padding: 12px 12px 10px;
+    }
+    @media (max-width: 640px){
+      .entry{padding: 14px;}
+    }
+    .entryTop{
+      display:flex; gap:10px; justify-content:space-between; align-items:flex-start;
+    }
+    @media (max-width: 640px){
+      .entryTop{flex-direction: column; gap:12px;}
+    }
+    .titleLine{display:flex; flex-wrap:wrap; gap:8px; align-items:baseline}
+    .bookTitle{font-size: 16px; font-weight: 800; letter-spacing:-.2px}
+    @media (max-width: 640px){
+      .bookTitle{font-size: 17px;}
+    }
+    .meta{color:var(--muted); font-size: 12px}
+    @media (max-width: 640px){
+      .meta{font-size: 13px;}
+    }
+    .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top: 8px}
+    .chip{
+      font-size: 12px; color: var(--text);
+      background: rgba(125,211,252,.10);
+      border: 1px solid rgba(125,211,252,.18);
+      padding: 5px 9px;
+      border-radius: 999px;
+    }
+    @media (max-width: 640px){
+      .chip{font-size: 13px; padding: 6px 11px;}
+    }
+    .summary{
+      margin-top: 10px;
+      color: rgba(232,237,243,.92);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      font-size: 14px;
+    }
+    @media (max-width: 640px){
+      .summary{font-size: 15px; line-height: 1.6;}
+    }
+    .entryBtns{display:flex; gap:8px; flex-wrap:wrap}
+    @media (max-width: 640px){
+      .entryBtns{width:100%;}
+    }
+    .smallBtn{
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,.08);
+      min-height: 36px;
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+    @media (max-width: 640px){
+      .smallBtn{
+        padding: 11px 14px;
+        font-size: 14px;
+        min-height: 44px;
+        flex: 1;
+      }
+    }
+    .smallBtn:hover{filter: brightness(1.08)}
+    .smallBtn:active{transform: scale(0.97)}
+    .smallBtn.danger{background: rgba(251,113,133,.16)}
+    .smallBtn.ok{background: rgba(134,239,172,.14)}
+    .divider{
+      height:1px; background: rgba(255,255,255,.08); margin: 12px 0;
+    }
+    .footerNote{
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    @media (max-width: 640px){
+      .footerNote{font-size: 13px;}
+    }
+    .empty{
+      color: var(--muted);
+      padding: 22px 10px;
+      text-align:center;
+      border: 1px dashed rgba(255,255,255,.14);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.02);
+    }
+    /* 모달 */
+    .modal{
+      display:none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal.show{display:flex;}
+    .modalContent{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      max-width: 450px;
+      width: 100%;
+      padding: 24px;
+      animation: modalIn .2s ease;
+    }
+    @keyframes modalIn{
+      from{opacity:0; transform: scale(0.95)}
+      to{opacity:1; transform: scale(1)}
+    }
+    .modalHeader{
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .modalHeader h3{margin:0; font-size: 18px;}
+    .closeBtn{
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+      min-height: auto;
+      line-height: 1;
+    }
+    .closeBtn:hover{color: var(--text)}
+    .settingItem{margin-bottom: 20px;}
+    .settingItem label{display:block; margin-bottom: 10px; font-size: 14px; color: var(--text);}
+    .scaleOptions{display:flex; gap:8px; flex-wrap:wrap;}
+    .scaleBtn{
+      flex: 1;
+      min-width: 70px;
+      background: rgba(255,255,255,.06);
+      border: 2px solid rgba(255,255,255,.08);
+      padding: 12px 8px;
+      border-radius: 10px;
+      font-size: 14px;
+      min-height: auto;
+    }
+    .scaleBtn.active{
+      background: rgba(125,211,252,.16);
+      border-color: rgba(125,211,252,.4);
+    }
+    .previewText{
+      margin-top: 12px;
+      padding: 16px;
+      background: rgba(0,0,0,.3);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: calc(14px * var(--font-scale));
+      line-height: 1.5;
+    }
+    .settingIcon{
+      cursor: pointer;
+      font-size: 20px;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: all .2s;
+      user-select: none;
+    }
+    .settingIcon:hover{
+      background: rgba(255,255,255,.1);
+      transform: rotate(30deg);
+    }
+    @media print{
+      body{background:#fff; color:#000}
+      .card, .entry{box-shadow:none}
+      .noPrint{display:none !important}
+      .wrap{max-width: 900px}
+      .entry{break-inside: avoid}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>독서기록장</h1>
+        <div class="sub">아주 간단하게: 날짜 · 책 · 요약</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div class="sub noPrint" id="countLabel"></div>
+        <span class="settingIcon noPrint" id="openSettings" title="설정">⚙️</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- 입력 -->
+      <section class="card noPrint" aria-label="새 기록">
+        <h2 id="formTitle">새 기록</h2>
+
+        <div class="row">
+          <div>
+            <label for="date">날짜 *</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label for="rating">별점</label>
+            <select id="rating">
+              <option value="0">선택 안 함</option>
+              <option value="1">★</option>
+              <option value="2">★★</option>
+              <option value="3">★★★</option>
+              <option value="4">★★★★</option>
+              <option value="5">★★★★★</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="title">책 제목 *</label>
+            <input id="title" type="text" placeholder="예) 데미안" maxlength="80" />
+          </div>
+          <div>
+            <label for="author">저자</label>
+            <input id="author" type="text" placeholder="예) 헤르만 헤세" maxlength="60" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label for="progress">진도/페이지</label>
+            <input id="progress" type="text" placeholder="예) 1~80p / 30%" maxlength="30" />
+          </div>
+          <div>
+            <label for="tags">태그(쉼표로 구분)</label>
+            <input id="tags" type="text" placeholder="예) 소설, 성장, 인생" maxlength="60" />
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <label for="summary">간단 요약 *</label>
+          <textarea id="summary" placeholder="짧게: 어떤 내용이었는지, 기억할 포인트만" maxlength="600"></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="saveBtn" class="ok">저장</button>
+          <button id="resetBtn" class="secondary">초기화</button>
+          <button id="cancelEditBtn" class="secondary" style="display:none;">편집 취소</button>
+        </div>
+        <div class="hint">* 는 필수. 저장하면 브라우저에 자동 저장돼요(이 PC/브라우저에서만 유지).</div>
+
+        <div class="divider"></div>
+
+        <div class="actions">
+          <button id="exportBtn">내보내기(JSON)</button>
+          <button id="importBtn" class="secondary">가져오기(JSON)</button>
+          <button id="printBtn" class="secondary">인쇄</button>
+          <button id="wipeBtn" class="danger">전체 삭제</button>
+          <input id="importFile" type="file" accept="application/json" style="display:none;" />
+        </div>
+      </section>
+
+      <!-- 목록/검색 -->
+      <section class="card" aria-label="기록 목록">
+        <h2>기록</h2>
+
+        <div class="toolbar noPrint">
+          <div class="left">
+            <div class="pill" title="제목/저자/요약/태그 검색">
+              🔎 <input id="q" type="text" placeholder="검색..." />
+            </div>
+          </div>
+          <div class="right">
+            <label class="sub" style="margin:0;">정렬</label>
+            <select id="sort" aria-label="정렬">
+              <option value="new">최신순</option>
+              <option value="old">오래된순</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="list" class="list"></div>
+
+        <div class="footerNote">
+          팁: 제목에 “완독/중단” 같은 단어를 붙이거나, 태그에 “완독”을 넣으면 찾기 쉬워요.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div id="settingsModal" class="modal">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>⚙️ 설정</h3>
+        <button class="closeBtn" id="closeSettings" aria-label="닫기">&times;</button>
+      </div>
+
+      <div class="settingItem">
+        <label>텍스트 크기</label>
+        <div class="scaleOptions">
+          <button class="scaleBtn" data-scale="0.85">작게</button>
+          <button class="scaleBtn active" data-scale="1">보통</button>
+          <button class="scaleBtn" data-scale="1.15">크게</button>
+          <button class="scaleBtn" data-scale="1.3">아주 크게</button>
+        </div>
+        <div class="previewText">
+          미리보기: 새들은 알에서 나오려고 투쟁한다. 알은 세계이다. 태어나려는 자는 하나의 세계를 깨뜨려야 한다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== 저장 키 ======
+    const STORAGE_KEY = "reading_log_simple_v1";
+    const SETTINGS_KEY = "reading_log_settings_v1";
+
+    // ====== DOM ======
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      countLabel: $("countLabel"),
+      formTitle: $("formTitle"),
+      date: $("date"),
+      title: $("title"),
+      author: $("author"),
+      progress: $("progress"),
+      tags: $("tags"),
+      rating: $("rating"),
+      summary: $("summary"),
+      saveBtn: $("saveBtn"),
+      resetBtn: $("resetBtn"),
+      cancelEditBtn: $("cancelEditBtn"),
+      exportBtn: $("exportBtn"),
+      importBtn: $("importBtn"),
+      importFile: $("importFile"),
+      printBtn: $("printBtn"),
+      wipeBtn: $("wipeBtn"),
+      q: $("q"),
+      sort: $("sort"),
+      list: $("list"),
+      openSettings: $("openSettings"),
+      closeSettings: $("closeSettings"),
+      settingsModal: $("settingsModal"),
+    };
+
+    // ====== 상태 ======
+    /** @type {{items:any[], editingId: string|null}} */
+    const state = {
+      items: [],
+      editingId: null,
+    };
+
+    // ====== 설정 관리 ======
+    function loadSettings(){
+      try{
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        return raw ? JSON.parse(raw) : {fontScale: 1};
+      }catch(e){
+        return {fontScale: 1};
+      }
+    }
+
+    function saveSettings(settings){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function applyFontScale(scale){
+      document.documentElement.style.setProperty('--font-scale', scale);
+      // 버튼 active 상태 업데이트
+      document.querySelectorAll('.scaleBtn').forEach(btn => {
+        btn.classList.toggle('active', parseFloat(btn.getAttribute('data-scale')) === scale);
+      });
+    }
+
+    // 설정 모달 열기/닫기
+    els.openSettings.addEventListener('click', () => {
+      els.settingsModal.classList.add('show');
+    });
+
+    els.closeSettings.addEventListener('click', () => {
+      els.settingsModal.classList.remove('show');
+    });
+
+    els.settingsModal.addEventListener('click', (e) => {
+      if(e.target === els.settingsModal){
+        els.settingsModal.classList.remove('show');
+      }
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && els.settingsModal.classList.contains('show')){
+        els.settingsModal.classList.remove('show');
+      }
+    });
+
+    // 텍스트 크기 버튼
+    document.querySelectorAll('.scaleBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const scale = parseFloat(btn.getAttribute('data-scale'));
+        applyFontScale(scale);
+        const settings = loadSettings();
+        settings.fontScale = scale;
+        saveSettings(settings);
+      });
+    });
+
+    // ====== 유틸 ======
+    function uid(){
+      return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,7);
+    }
+    function nowTs(){ return Date.now(); }
+
+    function safeTrim(s){ return (s ?? "").toString().trim(); }
+
+    function parseTags(input){
+      const raw = safeTrim(input);
+      if(!raw) return [];
+      return raw
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean)
+        .slice(0, 12);
+    }
+
+    function formatStars(n){
+      const k = Number(n) || 0;
+      if(k <= 0) return "";
+      return "★".repeat(k);
+    }
+
+    function escapeHtml(str){
+      return (str ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+
+    // ====== 저장/불러오기 ======
+    function load(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        state.items = raw ? JSON.parse(raw) : [];
+        if(!Array.isArray(state.items)) state.items = [];
+      }catch(e){
+        state.items = [];
+      }
+    }
+
+    function persist(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+    }
+
+    // ====== 폼 ======
+    function setDefaultDate(){
+      if(!els.date.value){
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+        els.date.value = `${yyyy}-${mm}-${dd}`;
+      }
+    }
+
+    function resetForm(){
+      state.editingId = null;
+      els.formTitle.textContent = "새 기록";
+      els.saveBtn.textContent = "저장";
+      els.cancelEditBtn.style.display = "none";
+
+      els.title.value = "";
+      els.author.value = "";
+      els.progress.value = "";
+      els.tags.value = "";
+      els.rating.value = "0";
+      els.summary.value = "";
+      els.date.value = "";
+      setDefaultDate();
+      els.title.focus();
+    }
+
+    function fillFormForEdit(item){
+      state.editingId = item.id;
+      els.formTitle.textContent = "기록 편집";
+      els.saveBtn.textContent = "수정 저장";
+      els.cancelEditBtn.style.display = "inline-block";
+
+      els.date.value = item.date || "";
+      els.title.value = item.title || "";
+      els.author.value = item.author || "";
+      els.progress.value = item.progress || "";
+      els.tags.value = (item.tags || []).join(", ");
+      els.rating.value = String(item.rating || 0);
+      els.summary.value = item.summary || "";
+      els.title.focus();
+    }
+
+    function validateForm(){
+      const date = safeTrim(els.date.value);
+      const title = safeTrim(els.title.value);
+      const summary = safeTrim(els.summary.value);
+
+      if(!date) return {ok:false, msg:"날짜를 입력해줘."};
+      if(!title) return {ok:false, msg:"책 제목을 입력해줘."};
+      if(!summary) return {ok:false, msg:"간단 요약을 입력해줘."};
+      return {ok:true, msg:""};
+    }
+
+    function getFormData(){
+      return {
+        date: safeTrim(els.date.value),
+        title: safeTrim(els.title.value),
+        author: safeTrim(els.author.value),
+        progress: safeTrim(els.progress.value),
+        tags: parseTags(els.tags.value),
+        rating: Number(els.rating.value) || 0,
+        summary: safeTrim(els.summary.value),
+      };
+    }
+
+    // ====== 렌더 ======
+    function getFilteredSortedItems(){
+      const q = safeTrim(els.q.value).toLowerCase();
+      const sort = els.sort.value;
+
+      let arr = [...state.items];
+
+      if(q){
+        arr = arr.filter(it => {
+          const hay = [
+            it.date, it.title, it.author, it.progress,
+            (it.tags || []).join(" "),
+            it.summary
+          ].join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      arr.sort((a,b)=>{
+        const A = a.date || "";
+        const B = b.date || "";
+        if(sort === "old"){
+          if(A === B) return (a.createdAt||0) - (b.createdAt||0);
+          return A.localeCompare(B);
+        }else{
+          if(A === B) return (b.createdAt||0) - (a.createdAt||0);
+          return B.localeCompare(A);
+        }
+      });
+
+      return arr;
+    }
+
+    function render(){
+      const items = getFilteredSortedItems();
+      els.countLabel.textContent = `총 ${state.items.length}개`;
+
+      if(items.length === 0){
+        els.list.innerHTML = `<div class="empty">아직 기록이 없어요. 위에서 첫 기록을 저장해보자.</div>`;
+        return;
+      }
+
+      els.list.innerHTML = items.map(it => {
+        const stars = formatStars(it.rating);
+        const metaParts = [
+          it.date ? it.date : "",
+          it.author ? `저자: ${escapeHtml(it.author)}` : "",
+          it.progress ? `진도: ${escapeHtml(it.progress)}` : "",
+          stars ? `별점: ${stars}` : ""
+        ].filter(Boolean);
+
+        const chips = (it.tags || []).slice(0, 12).map(t => `<span class="chip">#${escapeHtml(t)}</span>`).join("");
+
+        return `
+          <article class="entry" data-id="${it.id}">
+            <div class="entryTop">
+              <div>
+                <div class="titleLine">
+                  <div class="bookTitle">${escapeHtml(it.title)}</div>
+                  <div class="meta">${metaParts.join(" · ")}</div>
+                </div>
+                ${chips ? `<div class="chips">${chips}</div>` : ""}
+              </div>
+              <div class="entryBtns noPrint">
+                <button class="smallBtn ok" data-action="edit">편집</button>
+                <button class="smallBtn danger" data-action="del">삭제</button>
+              </div>
+            </div>
+            <div class="summary">${escapeHtml(it.summary)}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // ====== 동작 ======
+    function upsert(){
+      const v = validateForm();
+      if(!v.ok){
+        alert(v.msg);
+        return;
+      }
+
+      const data = getFormData();
+
+      if(state.editingId){
+        const idx = state.items.findIndex(x => x.id === state.editingId);
+        if(idx >= 0){
+          state.items[idx] = {
+            ...state.items[idx],
+            ...data,
+            updatedAt: nowTs(),
+          };
+        }
+      }else{
+        state.items.push({
+          id: uid(),
+          ...data,
+          createdAt: nowTs(),
+          updatedAt: nowTs(),
+        });
+      }
+
+      persist();
+      resetForm();
+      render();
+    }
+
+    function removeById(id){
+      const idx = state.items.findIndex(x => x.id === id);
+      if(idx < 0) return;
+      const ok = confirm("이 기록을 삭제할까?");
+      if(!ok) return;
+
+      state.items.splice(idx,1);
+      persist();
+      render();
+    }
+
+    function editById(id){
+      const it = state.items.find(x => x.id === id);
+      if(!it) return;
+      fillFormForEdit(it);
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    // ====== 백업/복원 ======
+    function exportJson(){
+      const payload = {
+        app: "reading_log_simple_v1",
+        exportedAt: new Date().toISOString(),
+        count: state.items.length,
+        items: state.items
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `독서기록장_백업_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importJsonFile(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const obj = JSON.parse(reader.result);
+          const incoming = obj.items ?? obj;
+          if(!Array.isArray(incoming)) throw new Error("형식 오류");
+
+          // 최소 필드 보정
+          const cleaned = incoming.map(x => ({
+            id: x.id || uid(),
+            date: safeTrim(x.date),
+            title: safeTrim(x.title),
+            author: safeTrim(x.author),
+            progress: safeTrim(x.progress),
+            tags: Array.isArray(x.tags) ? x.tags.map(t=>safeTrim(t)).filter(Boolean) : parseTags(x.tags),
+            rating: Number(x.rating) || 0,
+            summary: safeTrim(x.summary),
+            createdAt: Number(x.createdAt) || nowTs(),
+            updatedAt: Number(x.updatedAt) || nowTs(),
+          })).filter(x => x.date && x.title && x.summary);
+
+          if(cleaned.length === 0){
+            alert("가져올 수 있는 기록이 없어요(필수값: 날짜/제목/요약).");
+            return;
+          }
+
+          const ok = confirm(`가져오기: ${cleaned.length}개\n기존 기록을 유지하고 합칠까? (취소=덮어쓰기)`);
+          if(ok){
+            // merge: id 충돌 방지
+            const existingIds = new Set(state.items.map(x=>x.id));
+            cleaned.forEach(x=>{
+              if(existingIds.has(x.id)) x.id = uid();
+              state.items.push(x);
+            });
+          }else{
+            state.items = cleaned;
+          }
+
+          persist();
+          resetForm();
+          render();
+          alert("가져오기 완료!");
+        }catch(e){
+          alert("가져오기 실패: 올바른 JSON 파일인지 확인해줘.");
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    function wipeAll(){
+      const ok = confirm("전체 기록을 삭제할까? (되돌릴 수 없음)");
+      if(!ok) return;
+      state.items = [];
+      persist();
+      resetForm();
+      render();
+    }
+
+    // ====== 이벤트 ======
+    els.saveBtn.addEventListener("click", upsert);
+    els.resetBtn.addEventListener("click", resetForm);
+    els.cancelEditBtn.addEventListener("click", resetForm);
+
+    els.q.addEventListener("input", render);
+    els.sort.addEventListener("change", render);
+
+    els.list.addEventListener("click", (e) => {
+      const btn = e.target.closest("button");
+      if(!btn) return;
+
+      const action = btn.getAttribute("data-action");
+      const entry = btn.closest(".entry");
+      if(!entry) return;
+      const id = entry.getAttribute("data-id");
+
+      if(action === "edit") editById(id);
+      if(action === "del") removeById(id);
+    });
+
+    els.exportBtn.addEventListener("click", exportJson);
+    els.importBtn.addEventListener("click", () => els.importFile.click());
+    els.importFile.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if(file) importJsonFile(file);
+      els.importFile.value = "";
+    });
+
+    els.printBtn.addEventListener("click", () => window.print());
+    els.wipeBtn.addEventListener("click", wipeAll);
+
+    // Ctrl/Cmd + Enter로 저장
+    document.addEventListener("keydown", (e) => {
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      const mod = isMac ? e.metaKey : e.ctrlKey;
+      if(mod && e.key === "Enter"){
+        upsert();
+      }
+    });
+
+    // ====== 시작 ======
+    // 설정 로드 및 적용
+    const savedSettings = loadSettings();
+    applyFontScale(savedSettings.fontScale);
+
+    load();
+    setDefaultDate();
+    render();
+  </script>
+</body>
+</html>
