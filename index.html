@@ -7,248 +7,122 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b0d10" />
-  <title>독서기록장</title>
+  <title>정기간행물 체크 v1.1</title>
   <link rel="manifest" href="./manifest.json" />
+  <!-- 버전: 2026-02-10 09:14 - 날짜 선택 모달 추가 -->
   <style>
     :root{
       --bg:#0b0d10;
-      --card:#12161c;
       --muted:#9aa4b2;
       --text:#e8edf3;
-      --line:#243041;
       --accent:#7dd3fc;
       --danger:#fb7185;
       --ok:#86efac;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 18px;
+      --radius: 16px;
       --font-scale: 1;
     }
-    body{font-size: calc(14px * var(--font-scale));}
-    *{box-sizing:border-box}
+    body{font-size: calc(15px * var(--font-scale));}
+    *{box-sizing:border-box; margin:0; padding:0;}
     body{
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
       background: radial-gradient(1200px 800px at 20% 0%, rgba(125,211,252,.10), transparent 60%),
                   radial-gradient(1200px 800px at 80% 20%, rgba(134,239,172,.08), transparent 55%),
                   var(--bg);
       color:var(--text);
       -webkit-tap-highlight-color: rgba(125,211,252,.2);
-      -webkit-touch-callout: none;
     }
-    .wrap{max-width: 980px; margin: 0 auto; padding: 22px 14px 60px;}
-    @media (max-width: 640px){
-      .wrap{padding: 16px 12px 50px;}
-    }
-    header{
-      display:flex; gap:12px; align-items:baseline; justify-content:space-between;
-      margin: 8px 2px 14px;
-    }
-    @media (max-width: 640px){
-      header{flex-direction: column; gap:6px; align-items:flex-start;}
-    }
-    h1{font-size: 22px; margin:0; letter-spacing:-0.3px}
-    @media (max-width: 640px){
-      h1{font-size: 20px;}
-    }
-    .sub{color:var(--muted); font-size: 13px}
-    @media (max-width: 640px){
-      .sub{font-size: 12px;}
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
-    }
-    @media (max-width: 900px){
-      .grid{grid-template-columns:1fr}
-    }
+    .wrap{max-width: 600px; margin: 0 auto; padding: 20px 16px 60px;}
+    header{text-align: center; margin: 12px 0 24px;}
+    h1{font-size: 24px; letter-spacing:-0.5px; margin-bottom: 6px;}
+    .sub{color:var(--muted); font-size: 14px;}
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-      border: 1px solid rgba(255,255,255,.07);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
     }
-    .card h2{font-size:16px; margin: 2px 0 10px}
-    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-    @media (max-width: 520px){
-      .row{grid-template-columns: 1fr}
-    }
-    label{display:block; font-size: 12px; color:var(--muted); margin: 0 0 6px}
-    @media (max-width: 640px){
-      label{font-size: 13px;}
-    }
-    input, textarea, select{
+    .row{display:flex; gap:12px; margin-bottom: 16px;}
+    .row > div{flex:1;}
+    label{display:block; font-size: 13px; color:var(--muted); margin-bottom: 8px;}
+    input, select{
       width:100%;
       background: rgba(10,12,16,.6);
       color: var(--text);
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 12px;
-      padding: 11px 12px;
+      border-radius: 10px;
+      padding: 12px;
       outline: none;
       font-size: 16px;
       font-family: inherit;
     }
-    @media (max-width: 640px){
-      input, textarea, select{
-        padding: 14px 12px;
-        font-size: 16px;
-        border-radius: 10px;
-      }
-    }
-    textarea{min-height: 92px; resize: vertical; line-height:1.5}
-    @media (max-width: 640px){
-      textarea{min-height: 110px;}
-    }
-    input:focus, textarea:focus, select:focus{border-color: rgba(125,211,252,.55); box-shadow: 0 0 0 3px rgba(125,211,252,.12)}
-    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px}
+    input:focus, select:focus{border-color: var(--accent); box-shadow: 0 0 0 3px rgba(125,211,252,.12);}
     button{
       border:0;
-      border-radius: 12px;
-      padding: 10px 12px;
+      border-radius: 10px;
+      padding: 12px 16px;
       background: rgba(125,211,252,.16);
       color: var(--text);
       cursor:pointer;
       font-weight: 650;
-      font-size: 14px;
-      min-height: 44px;
+      font-size: 15px;
+      min-height: 48px;
       font-family: inherit;
       touch-action: manipulation;
+      width: 100%;
     }
-    @media (max-width: 640px){
-      button{
-        padding: 13px 16px;
-        font-size: 15px;
-        min-height: 48px;
-        border-radius: 10px;
-      }
-    }
-    button:hover{filter: brightness(1.08)}
-    button:active{transform: scale(0.97)}
-    button.secondary{background: rgba(255,255,255,.08); font-weight: 600}
-    button.danger{background: rgba(251,113,133,.18)}
-    button.ok{background: rgba(134,239,172,.16)}
-    .hint{color:var(--muted); font-size: 12px; margin-top: 8px; line-height:1.4}
-    @media (max-width: 640px){
-      .hint{font-size: 13px;}
-    }
-    .toolbar{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
-      margin: 14px 2px;
-    }
-    @media (max-width: 640px){
-      .toolbar{gap:8px; margin: 12px 0;}
-      .toolbar .left{width:100%;}
-      .toolbar .right{width:100%; justify-content:space-between;}
-    }
-    .toolbar .left, .toolbar .right{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .pill{
-      display:flex; gap:10px; align-items:center;
-      background: rgba(255,255,255,.06);
+    button:hover{filter: brightness(1.08);}
+    button:active{transform: scale(0.98);}
+    button.secondary{background: rgba(255,255,255,.08);}
+    button.danger{background: rgba(251,113,133,.18);}
+    button.ok{background: rgba(134,239,172,.16);}
+    button.small{padding: 10px 14px; font-size: 14px; min-height: 42px; width: auto;}
+    .magList{display:grid; gap:10px; margin-top: 14px;}
+    .magItem{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.08);
-      padding: 10px 12px;
-      border-radius: 999px;
+      border-radius: 12px;
+      gap:12px;
+      transition: all .2s;
     }
-    .pill input{border:0; background: transparent; padding:0; width: 240px; font-size: 15px;}
-    @media (max-width: 640px){
-      .pill{width:100%; padding: 12px 14px;}
-      .pill input{width:100%; font-size: 16px; padding: 2px 0;}
+    .magItem.read{
+      background: rgba(134,239,172,.06);
+      border-color: rgba(134,239,172,.18);
     }
-    .list{
-      display:grid; gap:12px;
-    }
-    .entry{
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-      padding: 12px 12px 10px;
-    }
-    @media (max-width: 640px){
-      .entry{padding: 14px;}
-    }
-    .entryTop{
-      display:flex; gap:10px; justify-content:space-between; align-items:flex-start;
-    }
-    @media (max-width: 640px){
-      .entryTop{flex-direction: column; gap:12px;}
-    }
-    .titleLine{display:flex; flex-wrap:wrap; gap:8px; align-items:baseline}
-    .bookTitle{font-size: 16px; font-weight: 800; letter-spacing:-.2px}
-    @media (max-width: 640px){
-      .bookTitle{font-size: 17px;}
-    }
-    .meta{color:var(--muted); font-size: 12px}
-    @media (max-width: 640px){
-      .meta{font-size: 13px;}
-    }
-    .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top: 8px}
-    .chip{
-      font-size: 12px; color: var(--text);
-      background: rgba(125,211,252,.10);
-      border: 1px solid rgba(125,211,252,.18);
-      padding: 5px 9px;
-      border-radius: 999px;
-    }
-    @media (max-width: 640px){
-      .chip{font-size: 13px; padding: 6px 11px;}
-    }
-    .summary{
-      margin-top: 10px;
-      color: rgba(232,237,243,.92);
-      line-height: 1.55;
-      white-space: pre-wrap;
-      font-size: 14px;
-    }
-    @media (max-width: 640px){
-      .summary{font-size: 15px; line-height: 1.6;}
-    }
-    .entryBtns{display:flex; gap:8px; flex-wrap:wrap}
-    @media (max-width: 640px){
-      .entryBtns{width:100%;}
-    }
-    .smallBtn{
-      padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(255,255,255,.08);
-      min-height: 36px;
-      font-family: inherit;
-      touch-action: manipulation;
-    }
-    @media (max-width: 640px){
-      .smallBtn{
-        padding: 11px 14px;
-        font-size: 14px;
-        min-height: 44px;
-        flex: 1;
-      }
-    }
-    .smallBtn:hover{filter: brightness(1.08)}
-    .smallBtn:active{transform: scale(0.97)}
-    .smallBtn.danger{background: rgba(251,113,133,.16)}
-    .smallBtn.ok{background: rgba(134,239,172,.14)}
-    .divider{
-      height:1px; background: rgba(255,255,255,.08); margin: 12px 0;
-    }
-    .footerNote{
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    @media (max-width: 640px){
-      .footerNote{font-size: 13px;}
-    }
+    .magInfo{flex:1;}
+    .magTitle{font-weight: 700; font-size: 16px; margin-bottom: 4px;}
+    .magMeta{font-size: 13px; color: var(--muted);}
+    .actions{display:flex; gap:8px;}
+    .hint{color:var(--muted); font-size: 13px; margin-top: 10px; line-height:1.4;}
     .empty{
       color: var(--muted);
-      padding: 22px 10px;
+      padding: 30px 16px;
       text-align:center;
       border: 1px dashed rgba(255,255,255,.14);
       border-radius: var(--radius);
       background: rgba(255,255,255,.02);
+      font-size: 14px;
     }
-    /* 모달 */
+    .settingIcon{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      transition: all .2s;
+      z-index: 100;
+    }
+    .settingIcon:hover{background: rgba(255,255,255,.12); transform: rotate(30deg);}
     .modal{
       display:none;
       position: fixed;
@@ -262,377 +136,206 @@
     }
     .modal.show{display:flex;}
     .modalContent{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
       border: 1px solid rgba(255,255,255,.12);
-      border-radius: 20px;
+      border-radius: 18px;
       box-shadow: 0 20px 60px rgba(0,0,0,.5);
-      max-width: 450px;
+      max-width: 480px;
       width: 100%;
       padding: 24px;
-      animation: modalIn .2s ease;
-    }
-    .modalContent.modalScrollable{
       max-height: 85vh;
       overflow-y: auto;
     }
-    .modalContent.modalWide{ max-width: 520px; }
-    @keyframes modalIn{
-      from{opacity:0; transform: scale(0.95)}
-      to{opacity:1; transform: scale(1)}
-    }
-    .modalHeader{
-      display:flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .modalHeader h3{margin:0; font-size: 18px;}
+    .modalHeader{display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+    .modalHeader h3{font-size: 18px;}
     .closeBtn{
       background: transparent;
       border: 0;
       color: var(--muted);
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 4px;
       min-height: auto;
       line-height: 1;
+      width: auto;
     }
-    .closeBtn:hover{color: var(--text)}
+    .closeBtn:hover{color: var(--text);}
     .settingItem{margin-bottom: 20px;}
-    .settingItem label{display:block; margin-bottom: 10px; font-size: 14px; color: var(--text);}
-    .scaleOptions{display:flex; gap:8px; flex-wrap:wrap;}
-    .scaleBtn{
-      flex: 1;
-      min-width: 70px;
+    .settingItem label{font-size: 14px; color: var(--text); margin-bottom: 10px;}
+    .nameList{margin-top: 10px;}
+    .nameRow{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.04);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .nameRow span{flex:1; font-size: 15px;}
+    .themeOptions{display:flex; gap:8px;}
+    .themeBtn{
+      flex:1;
       background: rgba(255,255,255,.06);
       border: 2px solid rgba(255,255,255,.08);
-      padding: 12px 8px;
+      padding: 12px;
       border-radius: 10px;
-      font-size: 14px;
-      min-height: auto;
-    }
-    .scaleBtn.active{
-      background: rgba(125,211,252,.16);
-      border-color: rgba(125,211,252,.4);
-    }
-    .previewText{
-      margin-top: 12px;
-      padding: 16px;
-      background: rgba(0,0,0,.3);
-      border-radius: 12px;
-      color: var(--muted);
-      font-size: calc(14px * var(--font-scale));
-      line-height: 1.5;
-    }
-    .settingIcon{
-      cursor: pointer;
-      font-size: 20px;
-      padding: 8px;
-      border-radius: 8px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      transition: all .2s;
-      user-select: none;
-    }
-    .settingIcon:hover{
-      background: rgba(255,255,255,.1);
-      transform: rotate(30deg);
-    }
-    /* 탭 */
-    .tabs{
-      display:flex;
-      gap:8px;
-      margin-bottom: 16px;
-      border-bottom: 2px solid rgba(255,255,255,.08);
-      padding-bottom: 2px;
-    }
-    .tabBtn{
-      background: transparent;
-      border: 0;
-      padding: 10px 18px;
       font-size: 15px;
-      font-weight: 600;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      margin-bottom: -2px;
       min-height: auto;
-      transition: all .2s;
     }
-    .tabBtn:hover{
-      color: var(--text);
-      filter: none;
-    }
-    .tabBtn.active{
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
-    .tabContent{display:none;}
-    .tabContent.active{display:block;}
-    /* 정기간행물 전용 */
-    .magStatus{
-      display: inline-flex;
-      align-items: center;
-      gap:6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .magStatus.read{
-      background: rgba(134,239,172,.16);
-      color: var(--ok);
-    }
-    .magStatus.unread{
-      background: rgba(255,255,255,.08);
-      color: var(--muted);
-    }
-    .magList{display:grid; gap:10px; margin-top: 12px;}
-    .magItem{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      gap:12px;
+    .themeBtn.active{background: rgba(125,211,252,.16); border-color: rgba(125,211,252,.4);}
+    /* 날짜 선택 모달 */
+    .dateModalContent{max-width: 360px;}
+    .dateInput{
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all .2s;
+      color-scheme: dark;
     }
-    .magItem:hover{
-      background: rgba(255,255,255,.06);
+    .dateInput::-webkit-calendar-picker-indicator{
+      cursor: pointer;
+      filter: invert(1);
+      font-size: 20px;
+      padding: 4px;
     }
-    .magItem.read{
-      background: rgba(134,239,172,.05);
-      border-color: rgba(134,239,172,.15);
+    .modalActions{
+      display: flex;
+      gap: 12px;
+      padding: 0 0 4px 0;
+      margin-top: 20px;
     }
-    .magInfo{flex:1;}
-    .magTitle{font-weight: 700; font-size: 14px; margin-bottom: 4px;}
-    .magMeta{font-size: 12px; color: var(--muted);}
-    .magActions{display:flex; gap:6px;}
-    /* 간행물 이름 관리 */
-    .magNameNewWrap{display:flex; gap:8px; align-items:center; margin-top: 8px;}
-    .magNameNewWrap input{flex:1;}
-    .magNameList{margin-top: 14px;}
-    .magNameList h4{font-size: 13px; margin: 0 0 10px; color: var(--muted);}
-    .magNameRow{display:flex; align-items:center; gap:8px; padding: 8px 10px; background: rgba(255,255,255,.04); border-radius: 10px; margin-bottom: 6px;}
-    .magNameRow span{flex:1;}
-    .magNameRow .smallBtn{padding: 6px 10px; font-size: 12px; min-height: 32px;}
+    .btnFlex{flex: 1;}
     /* 라이트 테마 */
-    body.theme-light{--bg:#f1f5f9;--card:#fff;--muted:#64748b;--text:#1e293b;--line:#e2e8f0;--accent:#0ea5e9;--danger:#f43f5e;--ok:#22c55e;--shadow: 0 10px 30px rgba(0,0,0,.08);}
-    body.theme-light{background: linear-gradient(180deg, rgba(14,165,233,.06), transparent 40%), linear-gradient(180deg, rgba(34,197,94,.04), transparent 40%), var(--bg); color: var(--text);}
-    body.theme-light .card{background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.95)); border-color: rgba(0,0,0,.06);}
-    body.theme-light input, body.theme-light textarea, body.theme-light select{background: rgba(255,255,255,.8); color: #1e293b; border-color: rgba(0,0,0,.1);}
-    body.theme-light input:focus, body.theme-light textarea:focus, body.theme-light select:focus{border-color: var(--accent); box-shadow: 0 0 0 3px rgba(14,165,233,.15);}
-    body.theme-light .pill{background: rgba(255,255,255,.7); border-color: rgba(0,0,0,.08);}
-    body.theme-light .entry, body.theme-light .magItem{background: rgba(255,255,255,.5); border-color: rgba(0,0,0,.06);}
-    body.theme-light .magItem.read{background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2);}
+    body.theme-light{--bg:#f1f5f9;--muted:#64748b;--text:#1e293b;--accent:#0ea5e9;--danger:#f43f5e;--ok:#22c55e;--shadow: 0 10px 30px rgba(0,0,0,.08);}
+    body.theme-light{background: linear-gradient(180deg, rgba(14,165,233,.06), transparent 40%), linear-gradient(180deg, rgba(34,197,94,.04), transparent 40%), var(--bg);}
+    body.theme-light .card{background: rgba(255,255,255,.95); border-color: rgba(0,0,0,.08);}
+    body.theme-light input, body.theme-light select{background: rgba(255,255,255,.9); color: #1e293b; border-color: rgba(0,0,0,.12);}
+    body.theme-light input:focus, body.theme-light select:focus{border-color: var(--accent); box-shadow: 0 0 0 3px rgba(14,165,233,.15);}
+    body.theme-light .magItem{background: rgba(255,255,255,.6); border-color: rgba(0,0,0,.08);}
+    body.theme-light .magItem.read{background: rgba(34,197,94,.10); border-color: rgba(34,197,94,.25);}
     body.theme-light .modal{background: rgba(0,0,0,.4);}
-    body.theme-light .modalContent{background: #fff; border-color: rgba(0,0,0,.1); box-shadow: 0 20px 60px rgba(0,0,0,.15);}
-    body.theme-light .scaleBtn, body.theme-light .themeBtn{background: rgba(0,0,0,.06); border-color: rgba(0,0,0,.1);}
-    body.theme-light .scaleBtn.active, body.theme-light .themeBtn.active{background: rgba(14,165,233,.15); border-color: rgba(14,165,233,.35);}
-    body.theme-light .previewText{background: rgba(0,0,0,.05);}
-    body.theme-light .closeBtn{color: var(--muted);}
-    body.theme-light .magNameRow{background: rgba(0,0,0,.04);}
-    .themeBtn{min-width: 80px;}
-    @media print{
-      body{background:#fff; color:#000}
-      .card, .entry{box-shadow:none}
-      .noPrint{display:none !important}
-      .wrap{max-width: 900px}
-      .entry{break-inside: avoid}
-    }
+    body.theme-light .modalContent{background: #fff; border-color: rgba(0,0,0,.12); box-shadow: 0 20px 60px rgba(0,0,0,.2);}
+    body.theme-light .nameRow{background: rgba(0,0,0,.04);}
+    body.theme-light .themeBtn{background: rgba(0,0,0,.06); border-color: rgba(0,0,0,.1);}
+    body.theme-light .themeBtn.active{background: rgba(14,165,233,.15); border-color: rgba(14,165,233,.35);}
+    body.theme-light .settingIcon{background: rgba(0,0,0,.06); border-color: rgba(0,0,0,.1);}
+    body.theme-light .dateInput{color-scheme: light;}
+    body.theme-light .dateInput::-webkit-calendar-picker-indicator{filter: invert(0);}
   </style>
 </head>
 <body>
+  <span class="settingIcon" id="openSettings" title="설정">⚙️</span>
+
   <div class="wrap">
     <header>
-      <div>
-        <h1>독서기록장</h1>
-        <div class="sub">일반 도서 & 정기간행물 관리</div>
-      </div>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div class="sub noPrint" id="countLabel"></div>
-        <span class="settingIcon noPrint" id="openSettings" title="설정">⚙️</span>
-      </div>
+      <h1>📰 정기간행물 체크</h1>
+      <div class="sub">매월 읽음 기록</div>
     </header>
 
-    <div class="grid">
-      <!-- 입력 -->
-      <section class="card noPrint" aria-label="새 기록">
-        <!-- 탭 메뉴 -->
-        <div class="tabs">
-          <button class="tabBtn active" data-tab="books">📚 일반 도서</button>
-          <button class="tabBtn" data-tab="magazines">📰 정기간행물</button>
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="year">연도</label>
+          <input id="year" type="number" placeholder="2026" min="2000" max="2100" />
         </div>
-
-        <!-- 일반 도서 탭 -->
-        <div id="booksTab" class="tabContent active">
-          <h2 id="formTitle">새 기록</h2>
-
-          <div class="row">
-            <div>
-              <label for="date">날짜 *</label>
-              <input id="date" type="date" />
-            </div>
-            <div>
-              <label for="rating">별점</label>
-              <select id="rating">
-                <option value="0">선택 안 함</option>
-                <option value="1">★</option>
-                <option value="2">★★</option>
-                <option value="3">★★★</option>
-                <option value="4">★★★★</option>
-                <option value="5">★★★★★</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label for="title">책 제목 *</label>
-              <input id="title" type="text" placeholder="예) 데미안" maxlength="80" />
-            </div>
-            <div>
-              <label for="author">저자</label>
-              <input id="author" type="text" placeholder="예) 헤르만 헤세" maxlength="60" />
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label for="progress">진도/페이지</label>
-              <input id="progress" type="text" placeholder="예) 1~80p / 30%" maxlength="30" />
-            </div>
-            <div>
-              <label for="tags">태그(쉼표로 구분)</label>
-              <input id="tags" type="text" placeholder="예) 소설, 성장, 인생" maxlength="60" />
-            </div>
-          </div>
-
-          <div style="margin-top:10px;">
-            <label for="summary">간단 요약 *</label>
-            <textarea id="summary" placeholder="짧게: 어떤 내용이었는지, 기억할 포인트만" maxlength="600"></textarea>
-          </div>
-
-          <div class="actions">
-            <button id="saveBtn" class="ok">저장</button>
-            <button id="resetBtn" class="secondary">초기화</button>
-            <button id="cancelEditBtn" class="secondary" style="display:none;">편집 취소</button>
-          </div>
-          <div class="hint">* 는 필수. 저장하면 브라우저에 자동 저장돼요.</div>
+        <div>
+          <label for="month">월</label>
+          <select id="month">
+            <option value="1">1월</option>
+            <option value="2">2월</option>
+            <option value="3">3월</option>
+            <option value="4">4월</option>
+            <option value="5">5월</option>
+            <option value="6">6월</option>
+            <option value="7">7월</option>
+            <option value="8">8월</option>
+            <option value="9">9월</option>
+            <option value="10">10월</option>
+            <option value="11">11월</option>
+            <option value="12">12월</option>
+          </select>
         </div>
+      </div>
 
-        <!-- 정기간행물 탭 -->
-        <div id="magazinesTab" class="tabContent">
-          <h2>정기간행물 관리</h2>
+      <div>
+        <button type="button" class="secondary small" id="openNamesModal" style="width:auto;">📋 간행물 관리</button>
+        <button type="button" class="secondary small" id="openArchiveModal" style="width:auto;">📚 보관함</button>
+        <button type="button" class="secondary small" id="openDataModal" style="width:auto;">💾 데이터</button>
+      </div>
 
-          <div style="margin-bottom: 14px;">
-            <label for="magName">간행물 이름 *</label>
-            <select id="magName" aria-label="간행물 선택">
-              <option value="">선택</option>
-              <option value="__new__">➕ 새로 추가</option>
-            </select>
-            <div id="magNameNewWrap" class="magNameNewWrap" style="display:none;">
-              <input id="magNameNew" type="text" placeholder="새 간행물 이름" maxlength="40" />
-              <button type="button" id="magNameAddBtn" class="ok">추가</button>
-            </div>
-            <div class="hint" style="margin-top:8px;">
-              <button type="button" class="smallBtn secondary" id="openMagListModal">📋 간행물 목록 관리</button>
-            </div>
+      <div class="magList" id="checklist"></div>
+
+      <div class="hint" id="countLabel"></div>
+    </div>
+  </div>
+
+  <!-- 간행물 관리 모달 -->
+  <div id="namesModal" class="modal">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>📋 간행물 관리</h3>
+        <button class="closeBtn" id="closeNames">&times;</button>
+      </div>
+
+      <div class="settingItem">
+        <label>새 간행물 추가</label>
+        <div class="row">
+          <div>
+            <input id="newName" type="text" placeholder="예) 뉴튼, 과학동아" maxlength="40" />
           </div>
-
-          <div class="row" style="margin-top:14px;">
-            <div>
-              <label for="magYear">연도 *</label>
-              <input id="magYear" type="number" placeholder="2026" min="1900" max="2100" />
-            </div>
-            <div>
-              <label for="magMonth">월호 *</label>
-              <select id="magMonth">
-                <option value="">선택</option>
-                <option value="1">1월호</option>
-                <option value="2">2월호</option>
-                <option value="3">3월호</option>
-                <option value="4">4월호</option>
-                <option value="5">5월호</option>
-                <option value="6">6월호</option>
-                <option value="7">7월호</option>
-                <option value="8">8월호</option>
-                <option value="9">9월호</option>
-                <option value="10">10월호</option>
-                <option value="11">11월호</option>
-                <option value="12">12월호</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="margin-top:10px;">
-            <label for="magReadDate">읽은 날짜 (선택)</label>
-            <input id="magReadDate" type="date" />
-            <div class="hint">읽지 않았다면 비워두세요</div>
-          </div>
-
-          <div style="margin-top:10px;">
-            <label for="magNotes">메모 (선택)</label>
-            <textarea id="magNotes" placeholder="기억할 내용이나 인상 깊었던 부분" maxlength="400"></textarea>
-          </div>
-
-          <div class="actions">
-            <button id="saveMagBtn" class="ok">저장</button>
-            <button id="resetMagBtn" class="secondary">초기화</button>
+          <div style="flex:0 0 auto;">
+            <button type="button" class="ok" id="addNameBtn">추가</button>
           </div>
         </div>
+      </div>
 
-        <div class="divider"></div>
+      <div class="settingItem">
+        <label>등록된 간행물</label>
+        <div class="nameList" id="nameList"></div>
+      </div>
+    </div>
+  </div>
 
-        <div class="actions">
-          <button type="button" class="secondary" id="openDataManageModal">📤 데이터 관리</button>
-        </div>
-      </section>
+  <!-- 보관함 모달 -->
+  <div id="archiveModal" class="modal">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>📚 보관함</h3>
+        <button class="closeBtn" id="closeArchive">&times;</button>
+      </div>
 
-      <!-- 목록/검색 -->
-      <section class="card" aria-label="기록 목록">
-        <!-- 탭 메뉴 -->
-        <div class="tabs">
-          <button class="tabBtn active" data-tab="books">📚 일반 도서</button>
-          <button class="tabBtn" data-tab="magazines">📰 정기간행물</button>
-        </div>
+      <div style="margin-bottom: 16px;">
+        <label for="archiveFilter">간행물</label>
+        <select id="archiveFilter">
+          <option value="">전체 보기</option>
+        </select>
+      </div>
 
-        <!-- 일반 도서 목록 -->
-        <div id="booksListTab" class="tabContent active">
-          <h2>기록</h2>
+      <div class="magList" id="archiveList"></div>
+    </div>
+  </div>
 
-          <div class="toolbar noPrint">
-            <div class="left">
-              <div class="pill" title="제목/저자/요약/태그 검색">
-                🔎 <input id="q" type="text" placeholder="검색..." />
-              </div>
-            </div>
-            <div class="right">
-              <label class="sub" style="margin:0;">정렬</label>
-              <select id="sort" aria-label="정렬">
-                <option value="new">최신순</option>
-                <option value="old">오래된순</option>
-              </select>
-            </div>
-          </div>
+  <!-- 데이터 관리 모달 -->
+  <div id="dataModal" class="modal">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>💾 데이터 관리</h3>
+        <button class="closeBtn" id="closeData">&times;</button>
+      </div>
 
-          <div id="list" class="list"></div>
+      <div class="settingItem">
+        <label>백업 및 복원</label>
+        <button id="exportBtn">내보내기(JSON)</button>
+        <button id="importBtn" class="secondary" style="margin-top:8px;">가져오기(JSON)</button>
+        <input id="importFile" type="file" accept="application/json" style="display:none;" />
+      </div>
 
-          <div class="footerNote">
-            팁: 제목에 "완독/중단" 같은 단어를 붙이거나, 태그에 "완독"을 넣으면 찾기 쉬워요.
-          </div>
-        </div>
-
-        <!-- 정기간행물 목록 -->
-        <div id="magazinesListTab" class="tabContent">
-          <h2>정기간행물</h2>
-          <p class="sub" style="margin: 0 0 14px;">호수별 읽음 기록을 보관함에서 확인하세요.</p>
-          <button type="button" class="ok" id="openMagArchiveModal" style="width:100%;">📰 정기간행물 보관함 열기</button>
-        </div>
-      </section>
+      <div class="settingItem">
+        <label>전체 삭제</label>
+        <button id="wipeBtn" class="danger">모든 기록 삭제</button>
+      </div>
     </div>
   </div>
 
@@ -641,332 +344,107 @@
     <div class="modalContent">
       <div class="modalHeader">
         <h3>⚙️ 설정</h3>
-        <button class="closeBtn" id="closeSettings" aria-label="닫기">&times;</button>
+        <button class="closeBtn" id="closeSettings">&times;</button>
       </div>
 
       <div class="settingItem">
         <label>테마</label>
-        <div class="scaleOptions">
-          <button class="scaleBtn themeBtn" data-theme="dark">🌙 다크</button>
-          <button class="scaleBtn themeBtn" data-theme="light">☀️ 라이트</button>
+        <div class="themeOptions">
+          <button class="themeBtn" data-theme="dark">🌙 다크</button>
+          <button class="themeBtn active" data-theme="light">☀️ 라이트</button>
         </div>
       </div>
 
       <div class="settingItem">
         <label>텍스트 크기</label>
-        <div class="scaleOptions">
-          <button class="scaleBtn" data-scale="0.85">작게</button>
-          <button class="scaleBtn active" data-scale="1">보통</button>
-          <button class="scaleBtn" data-scale="1.15">크게</button>
-          <button class="scaleBtn" data-scale="1.3">아주 크게</button>
-        </div>
-        <div class="previewText">
-          미리보기: 새들은 알에서 나오려고 투쟁한다. 알은 세계이다. 태어나려는 자는 하나의 세계를 깨뜨려야 한다.
+        <div class="themeOptions">
+          <button class="themeBtn" data-scale="0.85">작게</button>
+          <button class="themeBtn active" data-scale="1">보통</button>
+          <button class="themeBtn" data-scale="1.15">크게</button>
+          <button class="themeBtn" data-scale="1.3">아주 크게</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 간행물 목록 관리 모달 -->
-  <div id="magListModal" class="modal">
-    <div class="modalContent">
+  <!-- 읽은 날짜 선택 모달 -->
+  <div id="dateModal" class="modal">
+    <div class="modalContent dateModalContent">
       <div class="modalHeader">
-        <h3>📋 간행물 목록 관리</h3>
-        <button class="closeBtn" id="closeMagListModal" aria-label="닫기">&times;</button>
+        <h3>📅 읽은 날짜 선택</h3>
+        <button class="closeBtn" id="closeDateModal">&times;</button>
       </div>
-
       <div class="settingItem">
-        <label>새 간행물 추가</label>
-        <div class="magNameNewWrap">
-          <input id="magNameNewModal" type="text" placeholder="간행물 이름 입력" maxlength="40" />
-          <button type="button" id="magNameAddModalBtn" class="ok">추가</button>
-        </div>
+        <label>읽은 날짜</label>
+        <input type="date" id="readDateInput" class="dateInput">
       </div>
-
-      <div class="magNameList">
-        <h4>등록된 간행물</h4>
-        <div id="magNameListRows"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 정기간행물 보관함 모달 -->
-  <div id="magArchiveModal" class="modal">
-    <div class="modalContent modalScrollable modalWide">
-      <div class="modalHeader">
-        <h3>📰 정기간행물 보관함</h3>
-        <button class="closeBtn" id="closeMagArchiveModal" aria-label="닫기">&times;</button>
-      </div>
-
-      <div class="toolbar noPrint">
-        <div class="left">
-          <select id="magArchiveFilter" aria-label="간행물 선택" style="width: auto; min-width: 180px;">
-            <option value="">전체 보기</option>
-          </select>
-        </div>
-        <div class="right">
-          <label class="sub" style="margin:0;">정렬</label>
-          <select id="magArchiveSort" aria-label="정렬">
-            <option value="recent">최신호순</option>
-            <option value="oldest">오래된호순</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="magArchiveList" class="list"></div>
-
-      <div class="footerNote">
-        항목을 클릭하여 읽음/안읽음을 전환할 수 있어요. 초록색은 읽은 호입니다.
-      </div>
-    </div>
-  </div>
-
-  <!-- 데이터 관리 모달 -->
-  <div id="dataManageModal" class="modal">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>📤 데이터 관리</h3>
-        <button class="closeBtn" id="closeDataManageModal" aria-label="닫기">&times;</button>
-      </div>
-
-      <div class="settingItem">
-        <label>백업 및 복원</label>
-        <div class="actions">
-          <button id="exportBtn">내보내기(JSON)</button>
-          <button id="importBtn" class="secondary">가져오기(JSON)</button>
-          <input id="importFile" type="file" accept="application/json" style="display:none;" />
-        </div>
-      </div>
-
-      <div class="settingItem">
-        <label>인쇄 및 삭제</label>
-        <div class="actions">
-          <button id="printBtn" class="secondary">인쇄</button>
-          <button id="wipeBtn" class="danger">전체 삭제</button>
-        </div>
+      <div class="modalActions">
+        <button id="dateConfirm" class="ok btnFlex">확인</button>
+        <button id="dateCancel" class="secondary btnFlex">취소</button>
       </div>
     </div>
   </div>
 
   <script>
+    // ====== 버전 v1.2 - Service Worker 캐시 제거 (2026-02-10 09:20) ======
+    console.clear();
+    console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #7dd3fc');
+    console.log('%c📅 정기간행물 체크 v1.2', 'color: #7dd3fc; font-size: 24px; font-weight: bold');
+    console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #7dd3fc');
+    console.log('🕐 로드 시각:', new Date().toLocaleString('ko-KR'));
+    console.log('🔄 Service Worker 캐시 제거됨');
+    
     // ====== 저장 키 ======
-    const STORAGE_KEY = "reading_log_simple_v1";
-    const MAGAZINE_KEY = "reading_log_magazines_v1";
-    const MAGAZINE_NAMES_KEY = "reading_log_magazine_names_v1";
-    const SETTINGS_KEY = "reading_log_settings_v1";
+    const STORAGE_KEY = "mag_checklist_v1";
+    const SETTINGS_KEY = "mag_settings_v1";
 
     // ====== DOM ======
     const $ = (id) => document.getElementById(id);
     const els = {
+      year: $("year"),
+      month: $("month"),
+      checklist: $("checklist"),
       countLabel: $("countLabel"),
-      formTitle: $("formTitle"),
-      date: $("date"),
-      title: $("title"),
-      author: $("author"),
-      progress: $("progress"),
-      tags: $("tags"),
-      rating: $("rating"),
-      summary: $("summary"),
-      saveBtn: $("saveBtn"),
-      resetBtn: $("resetBtn"),
-      cancelEditBtn: $("cancelEditBtn"),
+      openNamesModal: $("openNamesModal"),
+      closeNames: $("closeNames"),
+      namesModal: $("namesModal"),
+      newName: $("newName"),
+      addNameBtn: $("addNameBtn"),
+      nameList: $("nameList"),
+      openArchiveModal: $("openArchiveModal"),
+      closeArchive: $("closeArchive"),
+      archiveModal: $("archiveModal"),
+      archiveFilter: $("archiveFilter"),
+      archiveList: $("archiveList"),
+      openDataModal: $("openDataModal"),
+      closeData: $("closeData"),
+      dataModal: $("dataModal"),
       exportBtn: $("exportBtn"),
       importBtn: $("importBtn"),
       importFile: $("importFile"),
-      printBtn: $("printBtn"),
       wipeBtn: $("wipeBtn"),
-      q: $("q"),
-      sort: $("sort"),
-      list: $("list"),
       openSettings: $("openSettings"),
       closeSettings: $("closeSettings"),
       settingsModal: $("settingsModal"),
-      // 정기간행물
-      magName: $("magName"),
-      magYear: $("magYear"),
-      magMonth: $("magMonth"),
-      magReadDate: $("magReadDate"),
-      magNotes: $("magNotes"),
-      saveMagBtn: $("saveMagBtn"),
-      resetMagBtn: $("resetMagBtn"),
-      openMagArchiveModal: $("openMagArchiveModal"),
-      closeMagArchiveModal: $("closeMagArchiveModal"),
-      magArchiveModal: $("magArchiveModal"),
-      magArchiveFilter: $("magArchiveFilter"),
-      magArchiveSort: $("magArchiveSort"),
-      magArchiveList: $("magArchiveList"),
-      openDataManageModal: $("openDataManageModal"),
-      closeDataManageModal: $("closeDataManageModal"),
-      dataManageModal: $("dataManageModal"),
-      magNameNew: $("magNameNew"),
-      magNameNewWrap: $("magNameNewWrap"),
-      magNameAddBtn: $("magNameAddBtn"),
-      magNameListRows: $("magNameListRows"),
-      openMagListModal: $("openMagListModal"),
-      closeMagListModal: $("closeMagListModal"),
-      magListModal: $("magListModal"),
-      magNameNewModal: $("magNameNewModal"),
-      magNameAddModalBtn: $("magNameAddModalBtn"),
+      dateModal: $("dateModal"),
+      readDateInput: $("readDateInput"),
+      dateConfirm: $("dateConfirm"),
+      dateCancel: $("dateCancel"),
+      closeDateModal: $("closeDateModal"),
     };
 
     // ====== 상태 ======
     const state = {
-      items: [],
-      editingId: null,
-      magazines: [],
-      magazineNames: [],
-      currentTab: 'books'
+      names: [],
+      records: []
     };
-
-    // ====== 탭 전환 ======
-    function switchTab(tabName) {
-      state.currentTab = tabName;
-      
-      // 모든 탭 버튼과 콘텐츠 업데이트
-      document.querySelectorAll('.tabBtn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
-      });
-      
-      document.querySelectorAll('.tabContent').forEach(content => {
-        content.classList.remove('active');
-      });
-      
-      if(tabName === 'books') {
-        $('booksTab').classList.add('active');
-        $('booksListTab').classList.add('active');
-      } else {
-        $('magazinesTab').classList.add('active');
-        $('magazinesListTab').classList.add('active');
-        renderMagazines();
-      }
-    }
-
-    document.querySelectorAll('.tabBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        switchTab(btn.getAttribute('data-tab'));
-      });
-    });
-
-    // ====== 설정 관리 ======
-    function loadSettings(){
-      try{
-        const raw = localStorage.getItem(SETTINGS_KEY);
-        const def = { fontScale: 1, theme: 'dark' };
-        if(!raw) return def;
-        const o = JSON.parse(raw);
-        return { fontScale: o.fontScale ?? 1, theme: o.theme ?? 'dark' };
-      }catch(e){
-        return { fontScale: 1, theme: 'dark' };
-      }
-    }
-
-    function saveSettings(settings){
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    }
-
-    function applyFontScale(scale){
-      document.documentElement.style.setProperty('--font-scale', scale);
-      document.querySelectorAll('.scaleBtn[data-scale]').forEach(btn => {
-        btn.classList.toggle('active', parseFloat(btn.getAttribute('data-scale')) === scale);
-      });
-    }
-
-    function applyTheme(theme){
-      document.body.classList.toggle('theme-light', theme === 'light');
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute('content', theme === 'light' ? '#f1f5f9' : '#0b0d10');
-      document.querySelectorAll('.themeBtn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-      });
-    }
-
-    els.openSettings.addEventListener('click', () => {
-      els.settingsModal.classList.add('show');
-    });
-
-    els.closeSettings.addEventListener('click', () => {
-      els.settingsModal.classList.remove('show');
-    });
-
-    els.settingsModal.addEventListener('click', (e) => {
-      if(e.target === els.settingsModal){
-        els.settingsModal.classList.remove('show');
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if(e.key !== 'Escape') return;
-      if(els.settingsModal.classList.contains('show')) els.settingsModal.classList.remove('show');
-      else if(els.magListModal.classList.contains('show')) els.magListModal.classList.remove('show');
-      else if(els.magArchiveModal.classList.contains('show')) els.magArchiveModal.classList.remove('show');
-      else if(els.dataManageModal.classList.contains('show')) els.dataManageModal.classList.remove('show');
-    });
-
-    els.openMagListModal.addEventListener('click', () => {
-      renderMagNameListRows();
-      els.magListModal.classList.add('show');
-      els.magNameNewModal.value = '';
-      els.magNameNewModal.focus();
-    });
-
-    els.closeMagListModal.addEventListener('click', () => {
-      els.magListModal.classList.remove('show');
-    });
-
-    els.magListModal.addEventListener('click', (e) => {
-      if(e.target === els.magListModal) els.magListModal.classList.remove('show');
-    });
-
-    els.magNameAddModalBtn.addEventListener('click', () => {
-      addMagazineName(els.magNameNewModal.value);
-      els.magNameNewModal.value = '';
-      els.magNameNewModal.focus();
-    });
-
-    document.querySelectorAll('.scaleBtn[data-scale]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const scale = parseFloat(btn.getAttribute('data-scale'));
-        applyFontScale(scale);
-        const settings = loadSettings();
-        settings.fontScale = scale;
-        saveSettings(settings);
-      });
-    });
-
-    document.querySelectorAll('.themeBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const theme = btn.getAttribute('data-theme');
-        applyTheme(theme);
-        const settings = loadSettings();
-        settings.theme = theme;
-        saveSettings(settings);
-      });
-    });
 
     // ====== 유틸 ======
     function uid(){
       return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,7);
     }
     function nowTs(){ return Date.now(); }
-
     function safeTrim(s){ return (s ?? "").toString().trim(); }
-
-    function parseTags(input){
-      const raw = safeTrim(input);
-      if(!raw) return [];
-      return raw
-        .split(",")
-        .map(t => t.trim())
-        .filter(Boolean)
-        .slice(0, 12);
-    }
-
-    function formatStars(n){
-      const k = Number(n) || 0;
-      if(k <= 0) return "";
-      return "★".repeat(k);
-    }
-
     function escapeHtml(str){
       return (str ?? "").toString()
         .replaceAll("&","&amp;")
@@ -976,738 +454,495 @@
         .replaceAll("'","&#39;");
     }
 
-    // ====== 일반 도서 저장/불러오기 ======
+    // ====== 데이터 로드/저장 ======
     function load(){
       try{
         const raw = localStorage.getItem(STORAGE_KEY);
-        state.items = raw ? JSON.parse(raw) : [];
-        if(!Array.isArray(state.items)) state.items = [];
+        if(raw){
+          const obj = JSON.parse(raw);
+          state.names = Array.isArray(obj.names) ? obj.names : [];
+          state.records = Array.isArray(obj.records) ? obj.records : [];
+        }
       }catch(e){
-        state.items = [];
+        state.names = [];
+        state.records = [];
       }
     }
 
-    function persist(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+    function save(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({names: state.names, records: state.records}));
     }
 
-    // ====== 정기간행물 이름 마스터 목록 ======
-    function loadMagazineNames(){
+    function loadSettings(){
       try{
-        const raw = localStorage.getItem(MAGAZINE_NAMES_KEY);
-        state.magazineNames = raw ? JSON.parse(raw) : [];
-        if(!Array.isArray(state.magazineNames)) state.magazineNames = [];
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        return raw ? JSON.parse(raw) : {theme: 'light', fontScale: 1};
       }catch(e){
-        state.magazineNames = [];
+        return {theme: 'light', fontScale: 1};
       }
-      var fromMagazines = [...new Set(state.magazines.map(m => m.name))].filter(Boolean);
-      var merged = [...new Set([...state.magazineNames, ...fromMagazines])].sort();
-      if(merged.length !== state.magazineNames.length || merged.some((n,i)=> n !== state.magazineNames[i])){
-        state.magazineNames = merged;
-        persistMagazineNames();
+    }
+
+    function saveSettings(s){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    }
+
+    function applyTheme(theme){
+      document.body.classList.toggle('theme-light', theme === 'light');
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute('content', theme === 'light' ? '#f1f5f9' : '#0b0d10');
+      document.querySelectorAll('.themeBtn[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+      });
+    }
+
+    function applyFontScale(scale){
+      document.documentElement.style.setProperty('--font-scale', scale);
+      document.querySelectorAll('.themeBtn[data-scale]').forEach(btn => {
+        btn.classList.toggle('active', parseFloat(btn.getAttribute('data-scale')) === scale);
+      });
+    }
+
+    // ====== 간행물 이름 관리 ======
+    function addName(name){
+      const n = safeTrim(name);
+      if(!n){ alert('이름을 입력하세요.'); return; }
+      if(state.names.includes(n)){ alert('이미 있는 이름입니다.'); return; }
+      state.names.push(n);
+      state.names.sort();
+      save();
+      renderNameList();
+      updateArchiveFilter();
+      renderChecklist();
+      els.newName.value = '';
+      els.newName.focus();
+    }
+
+    function editName(oldName, newName){
+      const n = safeTrim(newName);
+      if(!n){ alert('이름을 입력하세요.'); return; }
+      if(n === oldName) return;
+      if(state.names.includes(n)){ alert('이미 있는 이름입니다.'); return; }
+      const idx = state.names.indexOf(oldName);
+      if(idx >= 0) state.names[idx] = n;
+      state.names.sort();
+      state.records.forEach(r => { if(r.name === oldName) r.name = n; });
+      save();
+      renderNameList();
+      updateArchiveFilter();
+      renderChecklist();
+      renderArchive();
+    }
+
+    function deleteName(name){
+      const used = state.records.some(r => r.name === name);
+      if(used){
+        if(!confirm(`"${name}"로 저장된 기록이 있습니다. 삭제하면 목록에서만 사라지고 기록은 유지됩니다. 삭제할까요?`)) return;
+      }else{
+        if(!confirm(`"${name}"을(를) 삭제할까요?`)) return;
       }
-      updateMagNameSelect();
-      renderMagNameListRows();
+      state.names = state.names.filter(n => n !== name);
+      save();
+      renderNameList();
+      updateArchiveFilter();
+      renderChecklist();
     }
 
-    function persistMagazineNames(){
-      localStorage.setItem(MAGAZINE_NAMES_KEY, JSON.stringify(state.magazineNames));
-    }
-
-    function updateMagNameSelect(){
-      const cur = els.magName.value;
-      els.magName.innerHTML = '<option value="">선택</option>' +
-        state.magazineNames.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('') +
-        '<option value="__new__">➕ 새로 추가</option>';
-      if(state.magazineNames.includes(cur)) els.magName.value = cur;
-      else if(cur !== '__new__') els.magName.value = '';
-    }
-
-    function renderMagNameListRows(){
-      if(!state.magazineNames.length){
-        els.magNameListRows.innerHTML = '<div class="hint">등록된 간행물이 없어요. 위에 이름을 입력하고 "추가"를 누르세요.</div>';
+    function renderNameList(){
+      if(!state.names.length){
+        els.nameList.innerHTML = '<div class="hint">등록된 간행물이 없습니다.</div>';
         return;
       }
-      els.magNameListRows.innerHTML = state.magazineNames.map((name, idx) => `
-        <div class="magNameRow" data-idx="${idx}">
-          <span>${escapeHtml(name)}</span>
-          <button type="button" class="smallBtn secondary" data-action="editMagName">편집</button>
-          <button type="button" class="smallBtn danger" data-action="delMagName">삭제</button>
+      els.nameList.innerHTML = state.names.map((n, idx) => `
+        <div class="nameRow" data-idx="${idx}">
+          <span>${escapeHtml(n)}</span>
+          <button class="small secondary" data-action="edit">편집</button>
+          <button class="small danger" data-action="del">삭제</button>
         </div>
       `).join('');
     }
 
-    function addMagazineName(name){
-      const n = safeTrim(name);
-      if(!n){ alert('이름을 입력해줘.'); return; }
-      if(state.magazineNames.includes(n)){ alert('이미 있는 이름이에요.'); return; }
-      state.magazineNames.push(n);
-      state.magazineNames.sort();
-      persistMagazineNames();
-      updateMagNameSelect();
-      renderMagNameListRows();
-      els.magName.value = n;
-      els.magNameNew.value = '';
-      els.magNameNewWrap.style.display = 'none';
-      updateMagFilter();
+    function updateArchiveFilter(){
+      const cur = els.archiveFilter.value;
+      els.archiveFilter.innerHTML = '<option value="">전체 보기</option>' +
+        state.names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+      if(state.names.includes(cur)) els.archiveFilter.value = cur;
     }
 
-    function editMagazineName(oldName, newName){
-      const n = safeTrim(newName);
-      if(!n){ alert('이름을 입력해줘.'); return; }
-      if(n === oldName) return;
-      if(state.magazineNames.includes(n)){ alert('이미 있는 이름이에요.'); return; }
-      const idx = state.magazineNames.indexOf(oldName);
-      if(idx >= 0) state.magazineNames[idx] = n;
-      state.magazineNames.sort();
-      state.magazines.forEach(m => { if(m.name === oldName) m.name = n; });
-      persistMagazineNames();
-      persistMagazines();
-      updateMagNameSelect();
-      renderMagNameListRows();
-      updateMagFilter();
-      renderMagazines();
-      if(els.magName.value === oldName) els.magName.value = n;
-    }
-
-    function deleteMagazineName(name){
-      const used = state.magazines.some(m => m.name === name);
-      if(used){
-        if(!confirm('이 간행물로 기록된 호가 있어요. 삭제하면 목록에서만 사라지고, 기존 기록은 유지돼요. 삭제할까요?')) return;
-      }else{
-        if(!confirm('"' + name + '"을(를) 목록에서 삭제할까요?')) return;
+    // ====== 체크리스트 렌더 ======
+    function renderChecklist(){
+      const year = Number(els.year.value);
+      const month = Number(els.month.value);
+      if(!year || !month){
+        els.checklist.innerHTML = '<div class="empty">연도와 월을 선택하세요.</div>';
+        els.countLabel.textContent = '';
+        return;
       }
-      state.magazineNames = state.magazineNames.filter(n => n !== name);
-      persistMagazineNames();
-      updateMagNameSelect();
-      renderMagNameListRows();
-      updateMagFilter();
-      if(els.magName.value === name) els.magName.value = '';
-    }
-
-    // ====== 정기간행물 저장/불러오기 ======
-    function loadMagazines(){
-      try{
-        const raw = localStorage.getItem(MAGAZINE_KEY);
-        state.magazines = raw ? JSON.parse(raw) : [];
-        if(!Array.isArray(state.magazines)) state.magazines = [];
-      }catch(e){
-        state.magazines = [];
-      }
-      loadMagazineNames();
-      updateMagFilter();
-    }
-
-    function persistMagazines(){
-      localStorage.setItem(MAGAZINE_KEY, JSON.stringify(state.magazines));
-    }
-
-    function updateMagFilter(){
-      const names = state.magazineNames.length ? state.magazineNames : [...new Set(state.magazines.map(m => m.name))].sort();
-      if(els.magArchiveFilter){
-        const cur = els.magArchiveFilter.value;
-        els.magArchiveFilter.innerHTML = '<option value="">전체 보기</option>' + 
-          names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
-        if(names.includes(cur)) els.magArchiveFilter.value = cur;
-      }
-    }
-
-    // ====== 일반 도서 폼 ======
-    function setDefaultDate(){
-      if(!els.date.value){
-        const d = new Date();
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth()+1).padStart(2,"0");
-        const dd = String(d.getDate()).padStart(2,"0");
-        els.date.value = `${yyyy}-${mm}-${dd}`;
-      }
-    }
-
-    function resetForm(){
-      state.editingId = null;
-      els.formTitle.textContent = "새 기록";
-      els.saveBtn.textContent = "저장";
-      els.cancelEditBtn.style.display = "none";
-
-      els.title.value = "";
-      els.author.value = "";
-      els.progress.value = "";
-      els.tags.value = "";
-      els.rating.value = "0";
-      els.summary.value = "";
-      els.date.value = "";
-      setDefaultDate();
-      els.title.focus();
-    }
-
-    function fillFormForEdit(item){
-      state.editingId = item.id;
-      els.formTitle.textContent = "기록 편집";
-      els.saveBtn.textContent = "수정 저장";
-      els.cancelEditBtn.style.display = "inline-block";
-
-      els.date.value = item.date || "";
-      els.title.value = item.title || "";
-      els.author.value = item.author || "";
-      els.progress.value = item.progress || "";
-      els.tags.value = (item.tags || []).join(", ");
-      els.rating.value = String(item.rating || 0);
-      els.summary.value = item.summary || "";
-      els.title.focus();
-    }
-
-    function validateForm(){
-      const date = safeTrim(els.date.value);
-      const title = safeTrim(els.title.value);
-      const summary = safeTrim(els.summary.value);
-
-      if(!date) return {ok:false, msg:"날짜를 입력해줘."};
-      if(!title) return {ok:false, msg:"책 제목을 입력해줘."};
-      if(!summary) return {ok:false, msg:"간단 요약을 입력해줘."};
-      return {ok:true, msg:""};
-    }
-
-    function getFormData(){
-      return {
-        date: safeTrim(els.date.value),
-        title: safeTrim(els.title.value),
-        author: safeTrim(els.author.value),
-        progress: safeTrim(els.progress.value),
-        tags: parseTags(els.tags.value),
-        rating: Number(els.rating.value) || 0,
-        summary: safeTrim(els.summary.value),
-      };
-    }
-
-    // ====== 정기간행물 폼 ======
-    function setDefaultMagYear(){
-      if(!els.magYear.value){
-        els.magYear.value = new Date().getFullYear();
-      }
-    }
-
-    function resetMagForm(){
-      els.magName.value = "";
-      els.magNameNew.value = "";
-      els.magNameNewWrap.style.display = "none";
-      els.magYear.value = "";
-      els.magMonth.value = "";
-      els.magReadDate.value = "";
-      els.magNotes.value = "";
-      setDefaultMagYear();
-      els.magName.focus();
-    }
-
-    function getSelectedMagName(){
-      if(els.magName.value === "__new__") return safeTrim(els.magNameNew.value);
-      return safeTrim(els.magName.value);
-    }
-
-    function validateMagForm(){
-      const name = getSelectedMagName();
-      const year = safeTrim(els.magYear.value);
-      const month = safeTrim(els.magMonth.value);
-
-      if(!name) return {ok:false, msg:"간행물을 선택하거나 새로 추가해줘."};
-      if(!year) return {ok:false, msg:"연도를 입력해줘."};
-      if(!month) return {ok:false, msg:"월호를 선택해줘."};
-      return {ok:true, msg:""};
-    }
-
-    function getMagFormData(){
-      var name = getSelectedMagName();
-      if(els.magName.value === "__new__" && name && !state.magazineNames.includes(name)){
-        addMagazineName(name);
-      }
-      return {
-        name: name,
-        year: Number(els.magYear.value),
-        month: Number(els.magMonth.value),
-        readDate: safeTrim(els.magReadDate.value) || null,
-        notes: safeTrim(els.magNotes.value),
-        isRead: !!safeTrim(els.magReadDate.value)
-      };
-    }
-
-    // ====== 일반 도서 렌더 ======
-    function getFilteredSortedItems(){
-      const q = safeTrim(els.q.value).toLowerCase();
-      const sort = els.sort.value;
-
-      let arr = [...state.items];
-
-      if(q){
-        arr = arr.filter(it => {
-          const hay = [
-            it.date, it.title, it.author, it.progress,
-            (it.tags || []).join(" "),
-            it.summary
-          ].join(" ").toLowerCase();
-          return hay.includes(q);
-        });
-      }
-
-      arr.sort((a,b)=>{
-        const A = a.date || "";
-        const B = b.date || "";
-        if(sort === "old"){
-          if(A === B) return (a.createdAt||0) - (b.createdAt||0);
-          return A.localeCompare(B);
-        }else{
-          if(A === B) return (b.createdAt||0) - (a.createdAt||0);
-          return B.localeCompare(A);
-        }
-      });
-
-      return arr;
-    }
-
-    function render(){
-      const items = getFilteredSortedItems();
-      els.countLabel.textContent = `도서 ${state.items.length}개 · 간행물 ${state.magazines.length}개`;
-
-      if(items.length === 0){
-        els.list.innerHTML = `<div class="empty">아직 기록이 없어요. 위에서 첫 기록을 저장해보자.</div>`;
+      if(!state.names.length){
+        els.checklist.innerHTML = '<div class="empty">간행물 이름을 먼저 등록하세요. (간행물 관리 버튼)</div>';
+        els.countLabel.textContent = '';
         return;
       }
 
-      els.list.innerHTML = items.map(it => {
-        const stars = formatStars(it.rating);
-        const metaParts = [
-          it.date ? it.date : "",
-          it.author ? `저자: ${escapeHtml(it.author)}` : "",
-          it.progress ? `진도: ${escapeHtml(it.progress)}` : "",
-          stars ? `별점: ${stars}` : ""
-        ].filter(Boolean);
-
-        const chips = (it.tags || []).slice(0, 12).map(t => `<span class="chip">#${escapeHtml(t)}</span>`).join("");
+      const items = state.names.map(name => {
+        const rec = state.records.find(r => r.name === name && r.year === year && r.month === month);
+        const isRead = !!(rec && rec.isRead);
+        const dateStr = rec && rec.readDate ? rec.readDate : '';
+        const statusText = isRead ? (dateStr ? `읽음: ${dateStr}` : '읽음') : '미독';
+        const prefix = isRead ? '✓ ' : '';
 
         return `
-          <article class="entry" data-id="${it.id}">
-            <div class="entryTop">
-              <div>
-                <div class="titleLine">
-                  <div class="bookTitle">${escapeHtml(it.title)}</div>
-                  <div class="meta">${metaParts.join(" · ")}</div>
-                </div>
-                ${chips ? `<div class="chips">${chips}</div>` : ""}
-              </div>
-              <div class="entryBtns noPrint">
-                <button class="smallBtn ok" data-action="edit">편집</button>
-                <button class="smallBtn danger" data-action="del">삭제</button>
-              </div>
-            </div>
-            <div class="summary">${escapeHtml(it.summary)}</div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    // ====== 정기간행물 렌더 ======
-    function getFilteredSortedMagazines(){
-      const filterEl = els.magArchiveFilter;
-      const sortEl = els.magArchiveSort;
-      const filterName = filterEl ? filterEl.value : '';
-      const sort = sortEl ? sortEl.value : 'recent';
-
-      let arr = [...state.magazines];
-
-      if(filterName){
-        arr = arr.filter(m => m.name === filterName);
-      }
-
-      arr.sort((a,b)=>{
-        const A = a.year * 100 + a.month;
-        const B = b.year * 100 + b.month;
-        return sort === 'oldest' ? A - B : B - A;
-      });
-
-      return arr;
-    }
-
-    function renderMagazines(){
-      const items = getFilteredSortedMagazines();
-      const container = els.magArchiveList;
-      if(!container) return;
-
-      if(items.length === 0){
-        container.innerHTML = `<div class="empty">등록된 정기간행물이 없어요. 위에서 추가해보세요!</div>`;
-        return;
-      }
-
-      container.innerHTML = items.map(m => {
-        const readClass = m.isRead ? 'read' : 'unread';
-        const readMark = m.isRead ? '✓' : '';
-        const readInfo = m.readDate ? `읽음: ${m.readDate}` : '미독';
-        
-        return `
-          <div class="magItem ${readClass}" data-id="${m.id}">
+          <div class="magItem ${isRead ? 'read' : ''}" data-name="${escapeHtml(name)}">
             <div class="magInfo">
-              <div class="magTitle">${readMark} ${escapeHtml(m.name)} ${m.year}년 ${m.month}월호</div>
-              <div class="magMeta">${readInfo}${m.notes ? ' · ' + escapeHtml(m.notes.substring(0,50)) : ''}</div>
+              <div class="magTitle">${prefix}${escapeHtml(name)} ${year}년 ${month}월호</div>
+              <div class="magMeta">${statusText}</div>
             </div>
-            <div class="magActions noPrint">
-              <button class="smallBtn danger" data-action="delMag">삭제</button>
+            <div class="actions">
+              <button class="small ${isRead ? 'secondary' : 'ok'}" data-action="toggle">${isRead ? '취소' : '읽음 처리'}</button>
             </div>
           </div>
         `;
-      }).join("");
+      }).join('');
+
+      els.checklist.innerHTML = items;
+      const readCount = state.names.filter(name => {
+        const r = state.records.find(rec => rec.name === name && rec.year === year && rec.month === month);
+        return r && r.isRead;
+      }).length;
+      els.countLabel.textContent = `${readCount}/${state.names.length} 읽음`;
     }
 
-    // ====== 일반 도서 동작 ======
-    function upsert(){
-      const v = validateForm();
-      if(!v.ok){
-        alert(v.msg);
-        return;
-      }
-
-      const data = getFormData();
-
-      if(state.editingId){
-        const idx = state.items.findIndex(x => x.id === state.editingId);
-        if(idx >= 0){
-          state.items[idx] = {
-            ...state.items[idx],
-            ...data,
-            updatedAt: nowTs(),
-          };
-        }
-      }else{
-        state.items.push({
-          id: uid(),
-          ...data,
-          createdAt: nowTs(),
-          updatedAt: nowTs(),
-        });
-      }
-
-      persist();
-      resetForm();
-      render();
-    }
-
-    function removeById(id){
-      const idx = state.items.findIndex(x => x.id === id);
-      if(idx < 0) return;
-      const ok = confirm("이 기록을 삭제할까?");
-      if(!ok) return;
-
-      state.items.splice(idx,1);
-      persist();
-      render();
-    }
-
-    function editById(id){
-      const it = state.items.find(x => x.id === id);
-      if(!it) return;
-      fillFormForEdit(it);
-      window.scrollTo({top:0, behavior:"smooth"});
-    }
-
-    // ====== 정기간행물 동작 ======
-    function saveMagazine(){
-      const v = validateMagForm();
-      if(!v.ok){
-        alert(v.msg);
-        return;
-      }
-
-      const data = getMagFormData();
+    // ====== 읽음 토글 ======
+    let pendingToggleRecord = null; // 날짜 선택 대기 중인 레코드
+    
+    function toggleRead(name){
+      console.log('[toggleRead] 함수 호출됨! name:', name);
+      const year = Number(els.year.value);
+      const month = Number(els.month.value);
       
-      // 중복 체크
-      const existing = state.magazines.find(m => 
-        m.name === data.name && m.year === data.year && m.month === data.month
-      );
-
-      if(existing){
-        const ok = confirm("이미 같은 호가 등록되어 있어요. 덮어쓸까요?");
-        if(!ok) return;
-        existing.readDate = data.readDate;
-        existing.notes = data.notes;
-        existing.isRead = data.isRead;
-        existing.updatedAt = nowTs();
-      }else{
-        state.magazines.push({
-          id: uid(),
-          ...data,
-          createdAt: nowTs(),
-          updatedAt: nowTs(),
-        });
+      if(!year || !month || !name) {
+        alert('연도, 월, 이름이 필요합니다.');
+        return;
       }
 
-      persistMagazines();
-      resetMagForm();
-      updateMagNameSelect();
-      renderMagNameListRows();
-      updateMagFilter();
-      renderMagazines();
-      render();
-    }
+      let rec = state.records.find(r => r.name === name && r.year === year && r.month === month);
+      
+      if(!rec){
+        rec = {
+          id: uid(),
+          name,
+          year,
+          month,
+          readDate: null,
+          isRead: false,
+          createdAt: nowTs(),
+          updatedAt: nowTs()
+        };
+        state.records.push(rec);
+      }
 
-    function toggleMagRead(id){
-      const mag = state.magazines.find(m => m.id === id);
-      if(!mag) return;
-
-      if(mag.isRead){
-        mag.isRead = false;
-        mag.readDate = null;
+      if(rec.isRead){
+        // 미독으로 전환
+        rec.isRead = false;
+        rec.readDate = null;
+        rec.updatedAt = nowTs();
+        save();
+        renderChecklist();
+        if(els.archiveModal.classList.contains('show')) renderArchive();
       }else{
-        mag.isRead = true;
+        // 읽음으로 전환 - 날짜 선택 모달 표시
+        console.log('[모달 열기] dateModal:', els.dateModal);
+        pendingToggleRecord = rec;
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth()+1).padStart(2,"0");
         const dd = String(today.getDate()).padStart(2,"0");
-        mag.readDate = `${yyyy}-${mm}-${dd}`;
+        const defaultDate = `${yyyy}-${mm}-${dd}`;
+        els.readDateInput.value = defaultDate;
+        
+        // 모달 표시
+        if(els.dateModal){
+          els.dateModal.classList.add('show');
+          console.log('[모달] show 클래스 추가됨');
+          // 모달이 보이는지 확인
+          setTimeout(() => {
+            const isVisible = els.dateModal.classList.contains('show');
+            console.log('[모달] 1초 후 show 클래스 존재:', isVisible);
+            const computedStyle = window.getComputedStyle(els.dateModal);
+            console.log('[모달] display:', computedStyle.display);
+          }, 1000);
+        }else{
+          alert('날짜 모달을 찾을 수 없습니다!');
+        }
       }
-
-      mag.updatedAt = nowTs();
-      persistMagazines();
-      renderMagazines();
     }
 
-    function removeMagById(id){
-      const idx = state.magazines.findIndex(m => m.id === id);
-      if(idx < 0) return;
-      const ok = confirm("이 간행물을 삭제할까?");
-      if(!ok) return;
+    // ====== 날짜 선택 확인 ======
+    function confirmDateSelection(){
+      if(!pendingToggleRecord) return;
+      const selectedDate = els.readDateInput.value;
+      if(!selectedDate){
+        alert('날짜를 선택해주세요.');
+        return;
+      }
+      pendingToggleRecord.isRead = true;
+      pendingToggleRecord.readDate = selectedDate;
+      pendingToggleRecord.updatedAt = nowTs();
+      save();
+      renderChecklist();
+      if(els.archiveModal.classList.contains('show')) renderArchive();
+      els.dateModal.classList.remove('show');
+      pendingToggleRecord = null;
+    }
 
-      state.magazines.splice(idx,1);
-      persistMagazines();
-      updateMagNamesList();
-      updateMagFilter();
-      renderMagazines();
-      render(); // 카운트 업데이트
+    // ====== 날짜 선택 취소 ======
+    function cancelDateSelection(){
+      els.dateModal.classList.remove('show');
+      pendingToggleRecord = null;
+    }
+
+    // ====== 보관함 렌더 ======
+    function renderArchive(){
+      const filterName = els.archiveFilter.value;
+      let arr = [...state.records];
+      if(filterName) arr = arr.filter(r => r.name === filterName);
+      arr.sort((a,b) => (b.year * 100 + b.month) - (a.year * 100 + a.month));
+
+      if(!arr.length){
+        els.archiveList.innerHTML = '<div class="empty">기록이 없습니다.</div>';
+        return;
+      }
+
+      els.archiveList.innerHTML = arr.map(r => {
+        const statusText = r.isRead ? (r.readDate ? `읽음: ${r.readDate}` : '읽음') : '미독';
+        const prefix = r.isRead ? '✓ ' : '';
+        return `
+          <div class="magItem ${r.isRead ? 'read' : ''}">
+            <div class="magInfo">
+              <div class="magTitle">${prefix}${escapeHtml(r.name)} ${r.year}년 ${r.month}월호</div>
+              <div class="magMeta">${statusText}</div>
+            </div>
+            <div class="actions">
+              <button class="small danger" data-action="delRec" data-id="${r.id}">삭제</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteRecord(id){
+      if(!confirm('이 기록을 삭제할까요?')) return;
+      state.records = state.records.filter(r => r.id !== id);
+      save();
+      renderArchive();
+      renderChecklist();
     }
 
     // ====== 백업/복원 ======
     function exportJson(){
       const payload = {
-        app: "reading_log_simple_v1",
+        app: "mag_checklist_v1",
         exportedAt: new Date().toISOString(),
-        books: state.items,
-        magazines: state.magazines,
-        magazineNames: state.magazineNames
+        names: state.names,
+        records: state.records
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `독서기록장_백업_${new Date().toISOString().slice(0,10)}.json`;
+      a.download = `정기간행물_백업_${new Date().toISOString().slice(0,10)}.json`;
       a.click();
       URL.revokeObjectURL(a.href);
     }
 
-    function importJsonFile(file){
+    function importJson(file){
       const reader = new FileReader();
       reader.onload = () => {
         try{
           const obj = JSON.parse(reader.result);
+          const inNames = Array.isArray(obj.names) ? obj.names : [];
+          const inRecs = Array.isArray(obj.records) ? obj.records : [];
           
-          const incomingBooks = obj.books || obj.items || [];
-          const incomingMags = obj.magazines || [];
-
-          if(!Array.isArray(incomingBooks) && !Array.isArray(incomingMags)){
-            throw new Error("형식 오류");
-          }
-
-          const incomingNames = Array.isArray(obj.magazineNames) ? obj.magazineNames : [];
-          const ok = confirm(`가져오기: 도서 ${incomingBooks.length}개, 간행물 ${incomingMags.length}개\n기존 기록을 유지하고 합칠까? (취소=덮어쓰기)`);
+          const ok = confirm(`가져오기: 간행물 ${inNames.length}개, 기록 ${inRecs.length}개\n기존 데이터를 유지하고 합칠까요? (취소=덮어쓰기)`);
           
           if(ok){
-            // 도서 병합
-            const existingIds = new Set(state.items.map(x=>x.id));
-            incomingBooks.forEach(x=>{
-              if(existingIds.has(x.id)) x.id = uid();
-              state.items.push(x);
+            state.names = [...new Set([...state.names, ...inNames])].sort();
+            const existingIds = new Set(state.records.map(r=>r.id));
+            inRecs.forEach(r=>{
+              if(existingIds.has(r.id)) r.id = uid();
+              state.records.push(r);
             });
-
-            // 정기간행물 병합
-            const existingMagIds = new Set(state.magazines.map(x=>x.id));
-            incomingMags.forEach(x=>{
-              if(existingMagIds.has(x.id)) x.id = uid();
-              state.magazines.push(x);
-            });
-
-            state.magazineNames = [...new Set([...state.magazineNames, ...incomingNames])].sort();
           }else{
-            state.items = incomingBooks;
-            state.magazines = incomingMags;
-            state.magazineNames = incomingNames.length ? incomingNames : [...new Set(incomingMags.map(m=>m.name))].filter(Boolean).sort();
+            state.names = inNames;
+            state.records = inRecs;
           }
 
-          persist();
-          persistMagazines();
-          persistMagazineNames();
-          resetForm();
-          resetMagForm();
-          loadMagazineNames();
-          updateMagFilter();
-          render();
-          renderMagazines();
-          alert("가져오기 완료!");
+          save();
+          renderNameList();
+          updateArchiveFilter();
+          renderChecklist();
+          alert('가져오기 완료!');
         }catch(e){
-          alert("가져오기 실패: 올바른 JSON 파일인지 확인해줘.");
+          alert('가져오기 실패: 올바른 JSON 파일인지 확인하세요.');
         }
       };
       reader.readAsText(file, "utf-8");
     }
 
     function wipeAll(){
-      const ok = confirm("전체 기록을 삭제할까? (되돌릴 수 없음)");
-      if(!ok) return;
-      state.items = [];
-      state.magazines = [];
-      state.magazineNames = [];
-      persist();
-      persistMagazines();
-      persistMagazineNames();
-      resetForm();
-      resetMagForm();
-      updateMagNameSelect();
-      renderMagNameListRows();
-      updateMagFilter();
-      render();
-      renderMagazines();
+      if(!confirm('모든 기록을 삭제할까요? (되돌릴 수 없습니다)')) return;
+      state.names = [];
+      state.records = [];
+      save();
+      renderNameList();
+      updateArchiveFilter();
+      renderChecklist();
+      alert('삭제 완료');
     }
 
     // ====== 이벤트 ======
-    els.saveBtn.addEventListener("click", upsert);
-    els.resetBtn.addEventListener("click", resetForm);
-    els.cancelEditBtn.addEventListener("click", resetForm);
+    els.year.addEventListener('change', renderChecklist);
+    els.month.addEventListener('change', renderChecklist);
 
-    els.saveMagBtn.addEventListener("click", saveMagazine);
-    els.resetMagBtn.addEventListener("click", resetMagForm);
-
-    els.magName.addEventListener("change", () => {
-      els.magNameNewWrap.style.display = els.magName.value === "__new__" ? "flex" : "none";
-      if(els.magName.value === "__new__") els.magNameNew.focus();
-    });
-
-    els.magNameAddBtn.addEventListener("click", () => {
-      addMagazineName(els.magNameNew.value);
-    });
-
-    els.magNameListRows.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      const row = e.target.closest(".magNameRow");
-      if(!btn || !row) return;
-      const idx = parseInt(row.getAttribute("data-idx"), 10);
-      if(isNaN(idx) || idx < 0 || idx >= state.magazineNames.length) return;
-      const name = state.magazineNames[idx];
-      const action = btn.getAttribute("data-action");
-      if(action === "editMagName"){
-        const newName = prompt("새 이름", name);
-        if(newName != null) editMagazineName(name, newName);
-      }else if(action === "delMagName"){
-        deleteMagazineName(name);
-      }
-    });
-
-    els.q.addEventListener("input", render);
-    els.sort.addEventListener("change", render);
-
-    if(els.magArchiveFilter) els.magArchiveFilter.addEventListener("change", renderMagazines);
-    if(els.magArchiveSort) els.magArchiveSort.addEventListener("change", renderMagazines);
-
-    els.openMagArchiveModal.addEventListener("click", () => {
-      updateMagFilter();
-      renderMagazines();
-      els.magArchiveModal.classList.add("show");
-    });
-
-    els.closeMagArchiveModal.addEventListener("click", () => {
-      els.magArchiveModal.classList.remove("show");
-    });
-
-    els.magArchiveModal.addEventListener("click", (e) => {
-      if(e.target === els.magArchiveModal) els.magArchiveModal.classList.remove("show");
-    });
-
-    els.openDataManageModal.addEventListener("click", () => {
-      els.dataManageModal.classList.add("show");
-    });
-
-    els.closeDataManageModal.addEventListener("click", () => {
-      els.dataManageModal.classList.remove("show");
-    });
-
-    els.dataManageModal.addEventListener("click", (e) => {
-      if(e.target === els.dataManageModal) els.dataManageModal.classList.remove("show");
-    });
-
-    els.list.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
+    els.checklist.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
       if(!btn) return;
-
-      const action = btn.getAttribute("data-action");
-      const entry = btn.closest(".entry");
-      if(!entry) return;
-      const id = entry.getAttribute("data-id");
-
-      if(action === "edit") editById(id);
-      if(action === "del") removeById(id);
-    });
-
-    function handleMagItemClick(e){
-      const btn = e.target.closest("button");
-      const item = e.target.closest(".magItem");
+      const action = btn.getAttribute('data-action');
+      const item = btn.closest('.magItem');
       if(!item) return;
-      const id = item.getAttribute("data-id");
-      if(btn){
-        const action = btn.getAttribute("data-action");
-        if(action === "delMag"){
-          e.stopPropagation();
-          removeMagById(id);
-        }
-      }else{
-        toggleMagRead(id);
-      }
-    }
-
-    if(els.magArchiveList) els.magArchiveList.addEventListener("click", handleMagItemClick);
-
-    els.exportBtn.addEventListener("click", exportJson);
-    els.importBtn.addEventListener("click", () => els.importFile.click());
-    els.importFile.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      if(file) importJsonFile(file);
-      els.importFile.value = "";
+      const name = item.getAttribute('data-name');
+      if(action === 'toggle') toggleRead(name);
     });
 
-    els.printBtn.addEventListener("click", () => window.print());
-    els.wipeBtn.addEventListener("click", wipeAll);
+    els.openNamesModal.addEventListener('click', () => {
+      renderNameList();
+      els.namesModal.classList.add('show');
+      els.newName.value = '';
+      els.newName.focus();
+    });
+    els.closeNames.addEventListener('click', () => els.namesModal.classList.remove('show'));
+    els.namesModal.addEventListener('click', (e) => {
+      if(e.target === els.namesModal) els.namesModal.classList.remove('show');
+    });
 
-    // Ctrl/Cmd + Enter로 저장
-    document.addEventListener("keydown", (e) => {
-      const isMac = navigator.platform.toLowerCase().includes("mac");
-      const mod = isMac ? e.metaKey : e.ctrlKey;
-      if(mod && e.key === "Enter"){
-        if(state.currentTab === 'books'){
-          upsert();
-        }else{
-          saveMagazine();
-        }
+    els.addNameBtn.addEventListener('click', () => addName(els.newName.value));
+    els.newName.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter') addName(els.newName.value);
+    });
+
+    els.nameList.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      const row = e.target.closest('.nameRow');
+      if(!btn || !row) return;
+      const idx = parseInt(row.getAttribute('data-idx'), 10);
+      if(isNaN(idx) || idx < 0 || idx >= state.names.length) return;
+      const name = state.names[idx];
+      const action = btn.getAttribute('data-action');
+      if(action === 'edit'){
+        const newName = prompt('새 이름', name);
+        if(newName != null) editName(name, newName);
+      }else if(action === 'del'){
+        deleteName(name);
       }
+    });
+
+    els.openArchiveModal.addEventListener('click', () => {
+      updateArchiveFilter();
+      renderArchive();
+      els.archiveModal.classList.add('show');
+    });
+    els.closeArchive.addEventListener('click', () => els.archiveModal.classList.remove('show'));
+    els.archiveModal.addEventListener('click', (e) => {
+      if(e.target === els.archiveModal) els.archiveModal.classList.remove('show');
+    });
+
+    els.archiveFilter.addEventListener('change', renderArchive);
+    els.archiveList.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if(!btn) return;
+      const action = btn.getAttribute('data-action');
+      const id = btn.getAttribute('data-id');
+      if(action === 'delRec' && id) deleteRecord(id);
+    });
+
+    els.openDataModal.addEventListener('click', () => els.dataModal.classList.add('show'));
+    els.closeData.addEventListener('click', () => els.dataModal.classList.remove('show'));
+    els.dataModal.addEventListener('click', (e) => {
+      if(e.target === els.dataModal) els.dataModal.classList.remove('show');
+    });
+
+    els.exportBtn.addEventListener('click', exportJson);
+    els.importBtn.addEventListener('click', () => els.importFile.click());
+    els.importFile.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if(file) importJson(file);
+      els.importFile.value = '';
+    });
+    els.wipeBtn.addEventListener('click', wipeAll);
+
+    els.openSettings.addEventListener('click', () => els.settingsModal.classList.add('show'));
+    els.closeSettings.addEventListener('click', () => els.settingsModal.classList.remove('show'));
+    els.settingsModal.addEventListener('click', (e) => {
+      if(e.target === els.settingsModal) els.settingsModal.classList.remove('show');
+    });
+
+    // 날짜 선택 모달
+    els.dateConfirm.addEventListener('click', confirmDateSelection);
+    els.dateCancel.addEventListener('click', cancelDateSelection);
+    els.closeDateModal.addEventListener('click', cancelDateSelection);
+    els.dateModal.addEventListener('click', (e) => {
+      if(e.target === els.dateModal) cancelDateSelection();
+    });
+
+    document.querySelectorAll('.themeBtn[data-theme]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.getAttribute('data-theme');
+        applyTheme(theme);
+        const s = loadSettings();
+        s.theme = theme;
+        saveSettings(s);
+      });
+    });
+
+    document.querySelectorAll('.themeBtn[data-scale]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const scale = parseFloat(btn.getAttribute('data-scale'));
+        applyFontScale(scale);
+        const s = loadSettings();
+        s.fontScale = scale;
+        saveSettings(s);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key !== 'Escape') return;
+      if(els.dateModal.classList.contains('show')) cancelDateSelection();
+      else if(els.settingsModal.classList.contains('show')) els.settingsModal.classList.remove('show');
+      else if(els.namesModal.classList.contains('show')) els.namesModal.classList.remove('show');
+      else if(els.archiveModal.classList.contains('show')) els.archiveModal.classList.remove('show');
+      else if(els.dataModal.classList.contains('show')) els.dataModal.classList.remove('show');
     });
 
     // ====== 시작 ======
-    const savedSettings = loadSettings();
-    applyFontScale(savedSettings.fontScale);
-    applyTheme(savedSettings.theme);
+    const settings = loadSettings();
+    applyTheme(settings.theme);
+    applyFontScale(settings.fontScale);
 
     load();
-    loadMagazines();
-    setDefaultDate();
-    setDefaultMagYear();
-    render();
-    renderMagazines();
+    
+    const today = new Date();
+    els.year.value = today.getFullYear();
+    els.month.value = String(today.getMonth() + 1);
 
-    // PWA: Service Worker 등록 (Chrome 설치용)
+    renderNameList();
+    updateArchiveFilter();
+    renderChecklist();
+
+    // PWA: Service Worker 임시 비활성화 (캐시 문제 해결용)
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
-          .then(function (reg) { console.log('SW 등록됨:', reg.scope); })
-          .catch(function (err) { console.warn('SW 등록 실패:', err); });
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for(let registration of registrations) {
+          registration.unregister();
+          console.log('기존 SW 제거됨');
+        }
       });
     }
   </script>

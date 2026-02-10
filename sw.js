@@ -1,5 +1,5 @@
 /* 독서기록장 PWA Service Worker */
-const CACHE_NAME = 'booknote-v1';
+const CACHE_NAME = 'booknote-v2-20260210';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
